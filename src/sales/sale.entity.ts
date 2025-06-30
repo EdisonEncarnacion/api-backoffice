@@ -5,8 +5,9 @@ export class Sale {
     @PrimaryColumn('uuid')
     id_sale: string;
 
-    @Column()
-    state: string;
+    @Column('int')
+    state: number;
+
 
     @Column('numeric')
     total_amount: number;
