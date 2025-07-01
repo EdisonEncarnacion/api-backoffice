@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsString, IsNumber, IsUUID, IsDateString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsDateString } from 'class-validator';
 
 export class CreateCashRegisterDto {
     @IsNumber()
     id_cash_register: number;
 
-
-    id_user: string;
+    @IsNumber()
+    id_user: number;
 
     @IsNumber()
     id_state: number;
@@ -13,18 +13,19 @@ export class CreateCashRegisterDto {
     @IsDateString()
     opennig_date: string;
 
+    @IsOptional()
     @IsDateString()
-    last_closing_date: string;
+    last_closing_date?: string | null; // ✅ Acepta null o string
 
     @IsDateString()
     register_date: string;
 
-    @IsUUID()
-    id_local: string;
+    @IsNumber()
+    id_local: number;
 
     @IsNumber()
-    id_work_shift: number; // ← corregido
+    id_work_shift: number;
 
     @IsNumber()
-    id_serie: number; // ← corregido
+    id_serie: number;
 }

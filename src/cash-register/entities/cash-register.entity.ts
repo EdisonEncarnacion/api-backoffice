@@ -14,8 +14,9 @@ export class CashRegister {
     @Column({ type: 'timestamp' })
     opennig_date: Date;
 
-    @Column({ type: 'timestamp' })
-    last_closing_date: Date;
+    @Column({ type: 'timestamp', nullable: true })
+    last_closing_date: Date | null;
+
 
     @Column({ type: 'timestamp' })
     register_date: Date;
