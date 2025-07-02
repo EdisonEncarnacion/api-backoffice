@@ -7,6 +7,7 @@ import { ClientsModule } from './clients/clients.module';
 import { UserAuthModule } from './user-auth/user-auth.module';
 import { SideModule } from './side/side.module';
 import { CashRegisterModule } from './cash-register/cash-register.module';
+import { DepositModule } from './deposit/deposit.module';
 
 
 @Module({
@@ -28,6 +29,7 @@ import { CashRegisterModule } from './cash-register/cash-register.module';
     UserAuthModule,
     SideModule,
     CashRegisterModule,
+    DepositModule,
   ],
 })
 export class AppModule { }
