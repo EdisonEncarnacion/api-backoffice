@@ -8,6 +8,8 @@ async function bootstrap() {
   // 👇 Habilita la validación automática con class-validator
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(process.env.PORT ?? 3000);
+  // 👇 Escuchar en todas las interfaces de red (no solo localhost)
+  const port = Number(process.env.PORT ?? 3000);
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap();
