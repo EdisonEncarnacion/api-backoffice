@@ -12,6 +12,7 @@ import { DepositModule } from './deposit/deposit.module'; // ✅ Agregado
       envFilePath: '.env.development', // ✅ Cambia según tu entorno
       isGlobal: true,
     }),
+
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
