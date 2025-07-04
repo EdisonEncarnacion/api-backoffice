@@ -3,13 +3,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { SalesModule } from './sales/sales.module';
-import { CashRegisterModule } from './cash-register/cash-register.module'; // ✅ Agregado
-import { DepositModule } from './deposit/deposit.module'; // ✅ Agregado
+import { CashRegisterModule } from './cash-register/cash-register.module'; 
+import { DepositModule } from './deposit/deposit.module'; 
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env.development', // ✅ Cambia según tu entorno
+      envFilePath: '.env.development', 
       isGlobal: true,
     }),
 
@@ -29,8 +29,8 @@ import { DepositModule } from './deposit/deposit.module'; // ✅ Agregado
     }),
 
     SalesModule,
-    CashRegisterModule, // ✅ ahora estará disponible
-    DepositModule       // ✅ ahora estará disponible
+    CashRegisterModule, 
+    DepositModule       
   ],
 })
 export class AppModule {}
