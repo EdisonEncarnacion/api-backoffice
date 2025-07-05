@@ -4,7 +4,7 @@ import { Repository, DataSource } from 'typeorm';
 import { Deposit } from './entities/deposit.entity';
 import { DepositType } from './entities/deposit-type.entity';
 import { CreateDepositDto } from './dto/create-deposit.dto';
-// src/deposit/deposit.service.ts
+
 
 @Injectable()
 export class DepositService {
@@ -36,19 +36,21 @@ export class DepositService {
     };
   }
   async createDeposit(depositDto: CreateDepositDto): Promise<Deposit> {
-    // Validar que exista el tipo de depósito
+ 
     const existingType = await this.depositTypeRepo.findOneBy({
       code_deposit_type: depositDto.code_deposit_type,
     });
   
     if (!existingType) {
-      throw new NotFoundException(`El tipo de depósito '${depositDto.code_deposit_type}' no existe`);
+      throw new NotFoundException(
+        `El tipo de depósito '${depositDto.code_deposit_type}' no existe`
+      );
     }
   
-    // Obtener UUIDs del cash register y local
+
     const { cashRegisterUUID, localUUID } = await this.getCashRegisterInfo(depositDto.id_cash_register);
   
-    // Mostrar datos que se van a usar
+ 
     console.log('🧾 Datos para registrar depósito:');
     console.log('→ Código de caja:', depositDto.id_cash_register);
     console.log('→ UUID caja:', cashRegisterUUID);
@@ -56,10 +58,25 @@ export class DepositService {
     console.log('→ Monto:', depositDto.total_amount);
     console.log('→ Tipo de depósito:', depositDto.code_deposit_type);
   
-    // Crear el depósito
+
+    const existingDeposit = await this.depositRepo.findOneBy({
+      deposit_number: depositDto.deposit_number,
+    });
+  
+    if (existingDeposit) {
+
+      existingDeposit.total_amount = depositDto.total_amount;
+      existingDeposit.id_currency = depositDto.id_currency;
+      existingDeposit.state = depositDto.state;
+      existingDeposit.updated_at = new Date();
+      existingDeposit.date_process = new Date(depositDto.date_process);
+  
+      return await this.depositRepo.save(existingDeposit);
+    }
+  
     const deposit = this.depositRepo.create({
       ...depositDto,
-      id_cash_register: cashRegisterUUID,
+      id_cash_register: cashRegisterUUID, 
       id_local: localUUID,
       date_process: new Date(depositDto.date_process),
       created_at: new Date(depositDto.created_at),
@@ -68,5 +85,6 @@ export class DepositService {
   
     return await this.depositRepo.save(deposit);
   }
+  
   
 }
