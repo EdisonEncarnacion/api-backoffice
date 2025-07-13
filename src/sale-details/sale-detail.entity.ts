@@ -11,8 +11,8 @@ export class SaleDetail {
     @Column('decimal')
     product_price: number;
 
-    @Column('decimal')
-    tax_detail: number;
+    @Column('jsonb')
+    tax_detail: { type: string; amount: number };
 
     @Column('decimal')
     total_amount: number;

@@ -1,7 +1,7 @@
 export class CreateSaleDetailDto {
     quantity: number;
     product_price: number;
-    tax_detail: number;
+    tax_detail: { type: string; amount: number };
     total_amount: number;
     system_date: Date;
     id_transaction: string;
