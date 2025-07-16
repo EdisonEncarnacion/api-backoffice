@@ -31,4 +31,7 @@ export class Side {
 
     @Column({ type: 'varchar', nullable: true })
     product_id: string;
+
+    @Column({ type: 'int' })
+    id: number;
 }

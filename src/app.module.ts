@@ -1,16 +1,18 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { SalesModule } from './sales/sales.module';
-import { CashRegisterModule } from './cash-register/cash-register.module'; 
-import { DepositModule } from './deposit/deposit.module'; 
+import { CashRegisterModule } from './cash-register/cash-register.module';
+import { DepositModule } from './deposit/deposit.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
+import { SideModule } from './side/side.module'; // ✅ Importado aquí
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env.development', 
+      envFilePath: '.env.development',
       isGlobal: true,
     }),
 
@@ -30,8 +32,10 @@ import { UsuariosModule } from './usuarios/usuarios.module';
     }),
 
     SalesModule,
-    CashRegisterModule, 
-    DepositModule, UsuariosModule       
+    CashRegisterModule,
+    DepositModule,
+    UsuariosModule,
+    SideModule, // ✅ Agregado aquí sin modificar nada más
   ],
 })
 export class AppModule {}

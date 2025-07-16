@@ -1,16 +1,24 @@
+// src/side/side.service.ts
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Side } from './entities/side.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class SideService {
-    constructor(
-        @InjectRepository(Side)
-        private readonly sideRepository: Repository<Side>,
-    ) { }
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
-    findAll(): Promise<Side[]> {
-        return this.sideRepository.find();
-    }
+  async getSidesByLocal(localId: string) {
+    const query = `
+      SELECT
+        s.id AS id,
+        s.id_side,
+        s.name,
+        s.product_id,
+        s.state,
+        s.created_at
+      FROM side s
+      WHERE s.local_id = $1 AND s.state_audit = 'A'
+    `;
+    return await this.dataSource.query(query, [localId]);
+  }
 }

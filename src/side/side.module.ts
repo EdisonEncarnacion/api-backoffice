@@ -1,3 +1,4 @@
+// src/side/side.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SideService } from './side.service';
@@ -5,8 +6,8 @@ import { SideController } from './side.controller';
 import { Side } from './entities/side.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Side])],
+  imports: [TypeOrmModule.forFeature([Side])], // ✅ esta es la forma correcta
   controllers: [SideController],
   providers: [SideService],
 })
-export class SideModule { }
+export class SideModule {}

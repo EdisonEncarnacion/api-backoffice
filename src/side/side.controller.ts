@@ -1,13 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
+// src/side/side.controller.ts
+import { Controller, Get, Query } from '@nestjs/common';
 import { SideService } from './side.service';
-import { Side } from './entities/side.entity';
 
-@Controller('side')
+@Controller('sync/side')
 export class SideController {
-    constructor(private readonly sideService: SideService) { }
+  constructor(private readonly sideService: SideService) {}
 
-    @Get()
-    findAll(): Promise<Side[]> {
-        return this.sideService.findAll();
-    }
+  @Get()
+  async getSides(@Query('local_id') localId: string) {
+    return await this.sideService.getSidesByLocal(localId);
+  }
 }
