@@ -8,6 +8,7 @@ import { CashRegisterModule } from './cash-register/cash-register.module';
 import { DepositModule } from './deposit/deposit.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { SideModule } from './side/side.module'; // ✅ Importado aquí
+import { ClientModule } from './client/client.module';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { SideModule } from './side/side.module'; // ✅ Importado aquí
     CashRegisterModule,
     DepositModule,
     UsuariosModule,
-    SideModule, // ✅ Agregado aquí sin modificar nada más
+    SideModule,
+    ClientModule, // ✅ Agregado aquí sin modificar nada más
   ],
 })
 export class AppModule {}

@@ -9,13 +9,11 @@ export class UuidMapperService {
     const tableMap: Record<string, { column: string; whereColumn: string }> = {
       local: { column: 'id_local', whereColumn: 'id' },
       user_auth: { column: 'id_user', whereColumn: 'id' },
-      client: { column: 'id_client', whereColumn: 'id' },
       payment_type: { column: 'id_payment_type', whereColumn: 'id' },
       sale_document_type: { column: 'id_sale_document_type', whereColumn: 'id' },
       transaction_controller: { column: 'id_transaction', whereColumn: 'id' },
       side: { column: 'id_side', whereColumn: 'id' },
 
-      // 🔄 Caso especial: cash_register usa cash_register_code en vez de id
       cash_register: { column: 'id_cash_register', whereColumn: 'cash_register_code' },
     };
 

@@ -40,49 +40,51 @@ export class SalesService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
+  
     try {
       const { sale, sale_details } = dto;
-
+  
       // 🧬 Generar UUID para la venta
       sale.id_sale = randomUUID();
-
-      // 👇 Convertir IDs (int) a UUID
+  
+      // 👇 Convertir IDs (int) a UUID, excepto id_client
       sale.id_local = await this.uuidMapper.mapIdToUuid('local', +sale.id_local);
       sale.id_user = await this.uuidMapper.mapIdToUuid('user_auth', +sale.id_user);
-      sale.id_client = await this.uuidMapper.mapIdToUuid('client', +sale.id_client);
       sale.id_payment_type = await this.uuidMapper.mapIdToUuid('payment_type', +sale.id_payment_type);
       sale.id_cash_register = await this.uuidMapper.mapIdToUuid('cash_register', +sale.id_cash_register);
       sale.id_sale_document_type = await this.uuidMapper.mapIdToUuid('sale_document_type', +sale.id_sale_document_type);
-
+  
+      // 👇 id_client ya viene como UUID, no mapear
+      // sale.id_client = ... ❌ no se toca
+  
       if (sale.state === null || sale.state === undefined) {
         console.warn('⚠️ WARNING: "state" no fue enviado. Asignando 1 por defecto.');
         sale.state = 1;
       }
-
+  
       sale.updated_at = sale.updated_at ?? sale.created_at ?? new Date();
-
+  
       console.log('🧾 Venta con campos listos para guardar:', sale);
-
+  
       const createdSale = queryRunner.manager.create(Sale, sale);
       const savedSale = await queryRunner.manager.save(Sale, createdSale);
-
+  
       // 💡 Generar detalles con UUID
       const details = await Promise.all(
         sale_details.map(async (detail) => {
-            const newDetail = {
-                ...detail,
-                id_sale_detail: randomUUID(), // 👈 Se genera nuevo UUID
-                id_sale: savedSale.id_sale,
-                id_transaction: await this.uuidMapper.mapIdToUuid('transaction_controller', +detail.id_transaction),
-                id_side: await this.uuidMapper.mapIdToUuid('side', +detail.id_side),
-              };
+          const newDetail = {
+            ...detail,
+            id_sale_detail: randomUUID(),
+            id_sale: savedSale.id_sale,
+            id_transaction: await this.uuidMapper.mapIdToUuid('transaction_controller', +detail.id_transaction),
+            id_side: await this.uuidMapper.mapIdToUuid('side', +detail.id_side),
+          };
           return queryRunner.manager.create(SaleDetail, newDetail);
         })
       );
-
+  
       await queryRunner.manager.save(SaleDetail, details);
-
+  
       await queryRunner.commitTransaction();
       return { sale: savedSale, details };
     } catch (error) {
