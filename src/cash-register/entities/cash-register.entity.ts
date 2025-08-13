@@ -5,11 +5,12 @@ export class CashRegister {
     @PrimaryColumn('uuid')
     id_cash_register: string;
 
-    @Column()
+    @Column({ unique: true })
     cash_register_code: string;
 
+
     @Column()
-    id_state: number;  // ← ya no es UUID
+    id_state: number; 
 
     @Column({ type: 'timestamp' })
     opennig_date: Date;
@@ -37,10 +38,10 @@ export class CashRegister {
     id_user: string;
 
     @Column()
-    id_work_shift: number; // ← corregido
+    id_work_shift: number; 
 
 
     @Column()
-    id_serie: number; // ← corregido
+    id_serie: number; 
 
 }

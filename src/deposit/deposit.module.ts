@@ -8,7 +8,7 @@ import { DepositService } from './deposit.service';
 import { DepositController } from './deposit.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Deposit, DepositType])], // 👈 Aquí IMPORTANTE
+  imports: [TypeOrmModule.forFeature([Deposit, DepositType])], 
   controllers: [DepositController],
   providers: [DepositService],
 })

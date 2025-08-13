@@ -12,7 +12,7 @@
         exonerado: number;
         transferencia_gratuita: number;
         id_local: string;
-        id_sale_document_type: string;
+        id_sale_document_type: number;
         id_payment_type: string;
         id_cash_register: string;
         id_client: string;

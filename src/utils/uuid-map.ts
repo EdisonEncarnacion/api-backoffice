@@ -18,7 +18,7 @@ export function getOrCreateUUID(
     if (!map.has(id)) {
         const uuid = randomUUID();
         map.set(id, uuid);
-        // console.warn(`🆕 Generado UUID para ${type}: ${id} → ${uuid}`);
+   
     }
 
     return map.get(id)!;

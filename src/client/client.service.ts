@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Client } from './entities/client.entity';
 import { Person } from '../person/person.entity';
 import { CreateClientDto } from './dto/create-client.dto';
+import { GeneralTypeService } from '../general-type/general-type.service';
 
 @Injectable()
 export class ClientService {
@@ -13,39 +14,40 @@ export class ClientService {
 
     @InjectRepository(Person)
     private personRepository: Repository<Person>,
+
+    private generalTypeService: GeneralTypeService,
   ) {}
 
   async getClientsForSync() {
-    const clients = await this.clientRepository.find({
-      relations: ['person'],
-    });
-
+    const clients = await this.clientRepository.find();
+  
     return clients.map(client => ({
       id_client: client.id_client,
       client_code: client.client_code,
       first_name: client.first_name,
       last_name: client.last_name,
       document_number: client.document_number,
-      telphone_number: client.telphone_number,
+      phone_number: client.phone_number,
       email: client.email,
-      state: client.state,
       date_of_birth: client.date_of_birth,
+      origin_branch_id: client.origin_branch_id,
       created_at: client.created_at,
       updated_at: client.updated_at,
+      state: client.state, 
+      document_type_id: client.document_type_id,
       updated_sync_at: client.updated_sync_at,
-      id_document_type: client.id_document_type,
-      id_person_type: client.id_person_type,
-      id_person: client.id_person,
-
-     
     }));
   }
+  
 
   async saveOrUpdateClientFromSync(dto: CreateClientDto) {
+    // ✅ Validar que el document_type_id exista en cualquier categoría de general_type
+    await this.generalTypeService.validateAnyGeneralTypeId(dto.document_type_id, 'id_document_type');
+  
     const existing = await this.clientRepository.findOne({
-      where: { client_code: dto.client_code },
+      where: { id_client: dto.id_client },
     });
-
+  
     if (existing) {
       Object.assign(existing, {
         ...dto,
@@ -53,27 +55,12 @@ export class ClientService {
       });
       return await this.clientRepository.save(existing);
     }
-
-    // Crear persona si no existe
-    let person = await this.personRepository.findOne({
-      where: { id_person: dto.id_person },
-    });
-
-    if (!person) {
-      person = this.personRepository.create({
-        id_person: dto.id_person,
-        first_name: dto.first_name,
-        last_name: dto.last_name,
   
-      });
-      await this.personRepository.save(person);
-    }
-
     const newClient = this.clientRepository.create({
       ...dto,
       updated_sync_at: new Date(),
     });
-
+  
     return await this.clientRepository.save(newClient);
   }
 }

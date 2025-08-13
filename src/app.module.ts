@@ -7,8 +7,10 @@ import { SalesModule } from './sales/sales.module';
 import { CashRegisterModule } from './cash-register/cash-register.module';
 import { DepositModule } from './deposit/deposit.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
-import { SideModule } from './side/side.module'; // ✅ Importado aquí
+import { SideModule } from './side/side.module'; 
 import { ClientModule } from './client/client.module';
+import { FlowMeterModule } from './flow-meter/flow-meter.module';
+import { GeneralTypeModule } from './general-type/general-type.module';
 
 @Module({
   imports: [
@@ -37,7 +39,9 @@ import { ClientModule } from './client/client.module';
     DepositModule,
     UsuariosModule,
     SideModule,
-    ClientModule, // ✅ Agregado aquí sin modificar nada más
+    ClientModule,
+    FlowMeterModule,
+    GeneralTypeModule, 
   ],
 })
 export class AppModule {}

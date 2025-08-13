@@ -11,7 +11,7 @@ export class ClientController {
     return this.clientService.getClientsForSync();
   }
 
-  @Post('client') // ✅ Aquí estaba el problema
+  @Post('client') 
   saveOrUpdateClient(@Body() dto: CreateClientDto) {
     return this.clientService.saveOrUpdateClientFromSync(dto);
   }

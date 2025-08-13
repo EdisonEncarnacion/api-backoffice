@@ -33,6 +33,6 @@ export class Deposit {
   @Column()
   code_deposit_type: string;
 
-  @Column('uuid', { nullable: true }) // ✅ importante: permitir null si fuera necesario
+  @Column('uuid', { nullable: true }) 
   id_local: string;
 }

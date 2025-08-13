@@ -17,7 +17,7 @@ export class SalesController {
         console.log('🛬 Body recibido en la API (CreateSaleWithDetailsDto):', dto);
     
         if (!dto.sale || dto.sale.state === null || dto.sale.state === undefined) {
-            console.warn('⚠️ El campo "state" está ausente o es null dentro de sale.');
+            console.warn('El campo "state" está ausente o es null dentro de sale.');
         }
     
         return this.salesService.createWithDetails(dto);

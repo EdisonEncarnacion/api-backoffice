@@ -1,13 +1,17 @@
-// src/client/client.module.ts
+// client.module.ts
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClientService } from './client.service';
 import { ClientController } from './client.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Client } from './entities/client.entity';
-import { Person } from '../person/person.entity';
+import { Person } from '../person/person.entity'; // 👈 importar la entidad
+import { GeneralTypeModule } from '../general-type/general-type.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Client, Person])],
+  imports: [
+    TypeOrmModule.forFeature([Client, Person]), // 👈 agregar Person aquí
+    GeneralTypeModule,
+  ],
   controllers: [ClientController],
   providers: [ClientService],
 })

@@ -6,7 +6,7 @@ import { SideController } from './side.controller';
 import { Side } from './entities/side.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Side])], // ✅ esta es la forma correcta
+  imports: [TypeOrmModule.forFeature([Side])], 
   controllers: [SideController],
   providers: [SideService],
 })

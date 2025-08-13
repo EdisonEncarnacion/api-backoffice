@@ -1,5 +1,5 @@
-import { Entity, PrimaryColumn, Column, OneToOne, JoinColumn } from 'typeorm';
-import { Person } from '../../person/person.entity';
+// client.entity.ts
+import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity('client')
 export class Client {
@@ -15,27 +15,23 @@ export class Client {
   @Column()
   last_name: string;
 
-  @OneToOne(() => Person)
-  @JoinColumn({ name: 'id_person' })
-  person: Person;
-
-  @Column('uuid')
-  id_person: string;
+  @Column()
+  document_number: string;
 
   @Column()
-  document_number: string; // <- nuevo campo agregado
-
-  @Column()
-  telphone_number: string;
+  phone_number: string;
 
   @Column()
   email: string;
 
-  @Column('int')
-  state: number;
+  @Column()
+  document_type_id: number;
 
-  @Column({ type: 'date', nullable: true })  
+  @Column({ type: 'date', nullable: true })
   date_of_birth: Date;
+
+  @Column({ type: 'int', nullable: true })
+  origin_branch_id: number | null;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
@@ -46,12 +42,11 @@ export class Client {
   @Column({ type: 'timestamp', nullable: true })
   updated_sync_at: Date;
 
-  @Column({ type: 'uuid', nullable: true })
-origin_branch_id: string | null;
+  @Column({ type: 'int', nullable: true })
+  state: number; 
 
-  @Column()
-  id_document_type: number;
 
-  @Column()
-  id_person_type: number;
+  @Column({ type: 'char', length: 1, nullable: true })
+  state_audit?: 'A' | 'I';
 }
+

@@ -14,7 +14,7 @@ export class UsuariosService {
   async getUsersByLocal(localId: string) {
     const query = `
       SELECT
-        ua.id AS id,
+        ua.migration_sync_id,
         ua.id_user,
         ua.username,
         ua.password,
@@ -24,16 +24,16 @@ export class UsuariosService {
       WHERE ul.local_id = $1
         AND ul.state = 'A'
     `;
-
+  
     const result = await this.dataSource.query(query, [localId]);
-
-    // 🔍 Log de usuarios con id NULL (no deben sincronizarse)
+  
+   
     for (const user of result) {
-      if (!user.id) {
-        this.logger.warn(`⚠ Usuario con id NULL omitido: ${JSON.stringify(user)}`);
+      if (!user.migration_sync_id) {
+        this.logger.warn(`⚠ Usuario con migration_sync_id NULL omitido: ${JSON.stringify(user)}`);
       }
     }
-
+  
     return result;
   }
-}
+}  

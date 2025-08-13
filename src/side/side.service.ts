@@ -10,7 +10,7 @@ export class SideService {
   async getSidesByLocal(localId: string) {
     const query = `
       SELECT
-        s.id AS id,
+        s.migration_sync_id,
         s.id_side,
         s.name,
         s.product_id,
@@ -21,4 +21,5 @@ export class SideService {
     `;
     return await this.dataSource.query(query, [localId]);
   }
+  
 }

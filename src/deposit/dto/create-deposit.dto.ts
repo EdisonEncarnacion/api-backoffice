@@ -2,6 +2,9 @@
 import { IsNumber, IsString, IsDateString } from 'class-validator';
 
 export class CreateDepositDto {
+    @IsNumber()
+    id_deposit: number;
+    
     @IsDateString()
     date_process: string;
 

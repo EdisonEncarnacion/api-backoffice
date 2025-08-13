@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'sale' }) // 👈 muy importante
+@Entity({ name: 'sale' }) 
 export class Sale {
     @PrimaryColumn('uuid')
     id_sale: string;
@@ -42,8 +42,8 @@ export class Sale {
     @Column('uuid')
     id_local: string;
 
-    @Column('uuid')
-    id_sale_document_type: string;
+    @Column({ type: 'int' })
+    id_sale_document_type: number;
 
     @Column('uuid')
     id_payment_type: string;

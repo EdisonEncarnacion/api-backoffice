@@ -18,7 +18,7 @@ export class DepositService {
 
   private async getCashRegisterInfo(id_cash_register: number): Promise<{ cashRegisterUUID: string; localUUID: string }> {
     if (typeof id_cash_register !== 'number') {
-      throw new Error(`❌ id_cash_register inválido o no enviado: ${id_cash_register}`);
+      throw new Error(`id_cash_register inválido o no enviado: ${id_cash_register}`);
     }
 
     const result = await this.dataSource.query(
@@ -27,7 +27,7 @@ export class DepositService {
     );
 
     if (!result || result.length === 0) {
-      throw new Error(`❌ No se encontró caja con código = ${id_cash_register}`);
+      throw new Error(`No se encontró caja con código = ${id_cash_register}`);
     }
 
     return {
@@ -51,7 +51,7 @@ export class DepositService {
     const { cashRegisterUUID, localUUID } = await this.getCashRegisterInfo(depositDto.id_cash_register);
   
  
-    console.log('🧾 Datos para registrar depósito:');
+    console.log('Datos para registrar depósito:');
     console.log('→ Código de caja:', depositDto.id_cash_register);
     console.log('→ UUID caja:', cashRegisterUUID);
     console.log('→ UUID local:', localUUID);
@@ -60,8 +60,8 @@ export class DepositService {
   
 
     const existingDeposit = await this.depositRepo.findOneBy({
-      deposit_number: depositDto.deposit_number,
-    });
+      id_deposit: depositDto.id_deposit,
+    });    
   
     if (existingDeposit) {
 
