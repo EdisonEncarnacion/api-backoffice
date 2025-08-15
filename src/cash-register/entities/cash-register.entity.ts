@@ -5,9 +5,8 @@ export class CashRegister {
     @PrimaryColumn('uuid')
     id_cash_register: string;
 
-    @Column({ unique: true })
-    cash_register_code: string;
-
+    @Column({ type: 'int', unique: true })
+    cash_register_code: number;
 
     @Column()
     id_state: number; 

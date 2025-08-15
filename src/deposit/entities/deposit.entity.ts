@@ -1,10 +1,10 @@
 // src/deposit/entities/deposit.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity('deposit')
 export class Deposit {
-  @PrimaryGeneratedColumn()
-  id_deposit: number;
+  @PrimaryColumn()
+   id_deposit: number; 
 
   @Column({ type: 'timestamp' })
   date_process: Date;

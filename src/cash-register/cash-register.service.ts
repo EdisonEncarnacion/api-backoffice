@@ -38,13 +38,12 @@ export class CashRegisterService {
   async create(dto: CreateCashRegisterDto): Promise<CashRegister> {
     const userUUID = await this.getUUIDFromUserAuthById(+dto.id_user);
     const localUUID = await this.getUUIDFromLocalById(+dto.id_local);
-
   
-    let existing = await this.cashRegisterRepo.findOne({
-      where: { cash_register_code: String(dto.id_cash_register) },
+    // Validar si ya existe por cash_register_code
+    const existing = await this.cashRegisterRepo.findOne({
+      where: { cash_register_code: dto.id_cash_register },
     });
-
-   
+  
     if (existing) {
       existing.id_state = dto.id_state;
       existing.last_closing_date = dto.last_closing_date
@@ -53,10 +52,10 @@ export class CashRegisterService {
       existing.updated_at = new Date();
       return await this.cashRegisterRepo.save(existing);
     }
-
+  
     const cashRegister = this.cashRegisterRepo.create({
       id_cash_register: randomUUID(),
-      cash_register_code: String(dto.id_cash_register),
+      cash_register_code: dto.id_cash_register, // clave única
       id_user: userUUID,
       id_state: dto.id_state,
       opennig_date: new Date(dto.opennig_date),
@@ -71,21 +70,21 @@ export class CashRegisterService {
       updated_at: new Date(),
       state: 1,
     });
-
+  
     return await this.cashRegisterRepo.save(cashRegister);
   }
+  
+async update(cashRegisterCode: number, data: { id_state: number }) {
+  const caja = await this.cashRegisterRepo.findOneBy({
+    cash_register_code: cashRegisterCode, // ahora es number, no string
+  });
 
-  async update(cashRegisterCode: number, data: { id_state: number }) {
-    const caja = await this.cashRegisterRepo.findOneBy({
-      cash_register_code: String(cashRegisterCode),
-    });
+  if (!caja) return null;
 
-    if (!caja) return null;
+  caja.id_state = data.id_state;
+  caja.updated_at = new Date();
 
-    caja.id_state = data.id_state;
-    caja.updated_at = new Date();
-
-    await this.cashRegisterRepo.save(caja);
-    return caja;
-  }
+  await this.cashRegisterRepo.save(caja);
+  return caja;
+ }
 }
