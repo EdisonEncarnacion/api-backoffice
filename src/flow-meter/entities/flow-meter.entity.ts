@@ -26,9 +26,6 @@ export class FlowMeter {
   @Column('timestamp')
   created_at: Date;
 
-  @Column('timestamp')
-  updated_at: Date;
-
   @Column({ type: 'char', length: 1, nullable: true })
   state_audit: string | null;
 
