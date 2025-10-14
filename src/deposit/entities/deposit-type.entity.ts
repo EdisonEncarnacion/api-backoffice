@@ -11,6 +11,6 @@ export class DepositType {
     @Column()
     description: string;
 
-    @Column({ type: 'char' }) 
-    state: string;
+    @Column({ name: 'state_audit', type: 'char' })
+    state_audit: string;
 }

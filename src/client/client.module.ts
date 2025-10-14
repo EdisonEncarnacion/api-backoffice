@@ -4,12 +4,12 @@ import { ClientService } from './client.service';
 import { ClientController } from './client.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Client } from './entities/client.entity';
-import { Person } from '../person/person.entity'; // 👈 importar la entidad
+import { Person } from '../person/person.entity'; 
 import { GeneralTypeModule } from '../general-type/general-type.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Client, Person]), // 👈 agregar Person aquí
+    TypeOrmModule.forFeature([Client, Person]), 
     GeneralTypeModule,
   ],
   controllers: [ClientController],

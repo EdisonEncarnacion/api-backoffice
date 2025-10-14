@@ -1,0 +1,17 @@
+# Ignorar dependencias locales
+node_modules
+npm-debug.log
+yarn-error.log
+
+
+
+# Archivos de configuración de IDE
+.vscode
+.idea
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de entorno locales que no quieres subir
+.env.local

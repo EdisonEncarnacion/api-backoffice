@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull, MoreThan } from 'typeorm';
 import { Client } from './entities/client.entity';
 import { Person } from '../person/person.entity';
 import { CreateClientDto } from './dto/create-client.dto';
@@ -19,7 +19,11 @@ export class ClientService {
   ) {}
 
   async getClientsForSync() {
-    const clients = await this.clientRepository.find();
+    const clients = await this.clientRepository
+      .createQueryBuilder('client')
+      .where('client.updated_sync_at IS NULL')
+      .orWhere('client.updated_at > client.updated_sync_at')
+      .getMany();
   
     return clients.map(client => ({
       id_client: client.id_client,
@@ -33,7 +37,7 @@ export class ClientService {
       origin_branch_id: client.origin_branch_id,
       created_at: client.created_at,
       updated_at: client.updated_at,
-      state: client.state, 
+      state: client.state,
       document_type_id: client.document_type_id,
       updated_sync_at: client.updated_sync_at,
     }));
@@ -41,26 +45,38 @@ export class ClientService {
   
 
   async saveOrUpdateClientFromSync(dto: CreateClientDto) {
-    // ✅ Validar que el document_type_id exista en cualquier categoría de general_type
-    await this.generalTypeService.validateAnyGeneralTypeId(dto.document_type_id, 'id_document_type');
-  
     const existing = await this.clientRepository.findOne({
       where: { id_client: dto.id_client },
     });
-  
+
     if (existing) {
       Object.assign(existing, {
         ...dto,
+        updated_at: new Date(),
         updated_sync_at: new Date(),
       });
       return await this.clientRepository.save(existing);
     }
-  
+
     const newClient = this.clientRepository.create({
       ...dto,
+      created_at: new Date(),
+      updated_at: new Date(),
       updated_sync_at: new Date(),
     });
-  
+
     return await this.clientRepository.save(newClient);
+  }
+
+  async findByClientCode(code: string) {
+    return this.clientRepository.findOne({ where: { client_code: code } });
+  }
+
+  async updateByClientCode(code: string, dto: CreateClientDto) {
+    const client = await this.clientRepository.findOne({ where: { client_code: code } });
+    if (!client) return null;
+
+    Object.assign(client, dto, { updated_at: new Date() });
+    return this.clientRepository.save(client);
   }
 }

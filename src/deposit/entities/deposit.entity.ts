@@ -21,8 +21,8 @@ export class Deposit {
   @Column()
   id_currency: number;
 
-  @Column()
-  state: number;
+  @Column({ type: 'char', length: 1 })
+  state: string;
 
   @Column({ type: 'timestamp' })
   created_at: Date;

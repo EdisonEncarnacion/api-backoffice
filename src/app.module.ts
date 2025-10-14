@@ -11,6 +11,13 @@ import { SideModule } from './side/side.module';
 import { ClientModule } from './client/client.module';
 import { FlowMeterModule } from './flow-meter/flow-meter.module';
 import { GeneralTypeModule } from './general-type/general-type.module';
+import { PaymentsModule } from './payments/payments.module';
+import { TransactionControllerModule } from './transaction-controller/transaction-controller.module';
+import { SerieModule } from './serie/serie.module';
+import { ProductModule } from './product/product.module';
+import { StockModule } from './product/stock/stock.module';
+import { GroupSerieModule } from './group-serie/group-serie.module';
+
 
 @Module({
   imports: [
@@ -41,7 +48,13 @@ import { GeneralTypeModule } from './general-type/general-type.module';
     SideModule,
     ClientModule,
     FlowMeterModule,
-    GeneralTypeModule, 
+    GeneralTypeModule,
+    PaymentsModule,
+    TransactionControllerModule,
+    SerieModule,
+    ProductModule, 
+    StockModule, GroupSerieModule,  
+
   ],
 })
 export class AppModule {}

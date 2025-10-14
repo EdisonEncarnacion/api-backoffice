@@ -13,37 +13,26 @@ export class CashRegisterService {
     private readonly dataSource: DataSource,
   ) {}
 
+  // Mantenemos solo el mapeo de user
   private async getUUIDFromUserAuthById(id: number): Promise<string> {
     const result = await this.dataSource.query(
       'SELECT id_user FROM user_auth WHERE migration_sync_id = $1',
       [id],
-    );
+    );''
     if (!result || result.length === 0) {
-      throw new Error(`❌ No se encontró usuario con id = ${id} en user_auth`);
+      throw new Error(`No se encontró usuario con id = ${id} en user_auth`);
     }
     return result[0].id_user;
   }
 
-  private async getUUIDFromLocalById(id: number): Promise<string> {
-    const result = await this.dataSource.query(
-      'SELECT id_local FROM local WHERE migration_sync_id = $1',
-      [id],
-    );
-    if (!result || result.length === 0) {
-      throw new Error(`❌ No se encontró local con id = ${id}`);
-    }
-    return result[0].id_local;
-  }
-
   async create(dto: CreateCashRegisterDto): Promise<CashRegister> {
     const userUUID = await this.getUUIDFromUserAuthById(+dto.id_user);
-    const localUUID = await this.getUUIDFromLocalById(+dto.id_local);
-  
+
     // Validar si ya existe por cash_register_code
     const existing = await this.cashRegisterRepo.findOne({
       where: { cash_register_code: dto.id_cash_register },
     });
-  
+
     if (existing) {
       existing.id_state = dto.id_state;
       existing.last_closing_date = dto.last_closing_date
@@ -52,39 +41,36 @@ export class CashRegisterService {
       existing.updated_at = new Date();
       return await this.cashRegisterRepo.save(existing);
     }
-  
+
     const cashRegister = this.cashRegisterRepo.create({
       id_cash_register: randomUUID(),
-      cash_register_code: dto.id_cash_register, // clave única
+      cash_register_code: dto.id_cash_register, 
       id_user: userUUID,
       id_state: dto.id_state,
       opennig_date: new Date(dto.opennig_date),
-      last_closing_date: dto.last_closing_date
-        ? new Date(dto.last_closing_date)
-        : null,
-      register_date: new Date(dto.register_date),
-      id_local: localUUID,
+      last_closing_date: dto.last_closing_date ? new Date(dto.last_closing_date) : null,
+      id_local: dto.id_local, 
+      id_group_serie: dto.id_group_serie || null,  
       id_work_shift: dto.id_work_shift,
-      id_serie: dto.id_serie,
       created_at: new Date(),
       updated_at: new Date(),
-      state: 1,
     });
-  
+    
+
     return await this.cashRegisterRepo.save(cashRegister);
   }
-  
-async update(cashRegisterCode: number, data: { id_state: number }) {
-  const caja = await this.cashRegisterRepo.findOneBy({
-    cash_register_code: cashRegisterCode, // ahora es number, no string
-  });
 
-  if (!caja) return null;
+  async update(cashRegisterCode: number, data: { id_state: number }) {
+    const caja = await this.cashRegisterRepo.findOneBy({
+      cash_register_code: cashRegisterCode,
+    });
 
-  caja.id_state = data.id_state;
-  caja.updated_at = new Date();
+    if (!caja) return null;
 
-  await this.cashRegisterRepo.save(caja);
-  return caja;
- }
+    caja.id_state = data.id_state;
+    caja.updated_at = new Date();
+
+    await this.cashRegisterRepo.save(caja);
+    return caja;
+  }
 }

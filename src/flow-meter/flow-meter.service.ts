@@ -29,7 +29,6 @@ export class FlowMeterService {
       final_cm: dto.final_cm,
       local_id: localUuid,
       created_at: dto.created_at,
-      updated_at: dto.updated_at,
       state_audit: 'A', // valor por defecto
       hose_id: hoseUuid,
     });

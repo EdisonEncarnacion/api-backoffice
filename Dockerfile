@@ -1,20 +1,20 @@
-#BUILD
-FROM node:20.19-alpine AS build
+# Imagen base ligera de Node.js
+FROM node:20-alpine
+
+# Carpeta de trabajo dentro del contenedor
 WORKDIR /app
 
+# Copiar package.json y package-lock.json
 COPY package*.json ./
-RUN --mount=type=cache,id=npm,target=/root/.npm npm ci
-COPY . .
-RUN npm run build \
- && npm prune --omit=dev
-FROM node:20.19-alpine AS production
-WORKDIR /app
-RUN adduser --disabled-password --uid 1001 --gecos "" appuser \
- && chown -R appuser /app
 
-USER appuser
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist  ./dist
-COPY  ./package*.json .
-                  
-ENTRYPOINT ["node" , "dist/main.js"]
+# Instalar solo dependencias de producción
+RUN npm install --production
+
+# Copiar la carpeta dist con el código compilado
+COPY dist ./dist
+
+# Exponer puerto (igual que el que usas en main.js)
+EXPOSE 3017
+
+# Comando para ejecutar la app
+CMD ["node", "dist/main.js"]
