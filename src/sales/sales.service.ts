@@ -48,10 +48,9 @@ export class SalesService {
       const { sale, sale_details, payments } = dto;
   
       
-      sale.id_sale = randomUUID(); 
+      sale.id_sale = sale.id_sale || randomUUID();
   
-
-      sale.id_user = (await this.uuidMapper.mapIdToUuid('user_auth', +sale.id_user)) as string;
+      sale.id_user = sale.id_user;
       sale.id_payment_type = (await this.uuidMapper.mapIdToUuid('payment_type', +sale.id_payment_type)) as string;
       sale.id_cash_register = (await this.uuidMapper.mapIdToUuid('cash_register', +sale.id_cash_register)) as string;
 
@@ -68,8 +67,7 @@ export class SalesService {
       const savedSale = await queryRunner.manager.save(Sale, createdSale);
   
       // Guardar detalles
-     // Guardar detalles
-    // Guardar detalles
+
     const details = await Promise.all(
       sale_details.map(async (detail) => {
         const newDetail: Partial<SaleDetail> = {

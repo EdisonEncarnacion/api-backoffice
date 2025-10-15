@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CashRegister } from './entities/cash-register.entity';
 import { CreateCashRegisterDto } from './dto/create-cash-register.dto';
 import { randomUUID } from 'crypto';
@@ -10,25 +10,13 @@ export class CashRegisterService {
   constructor(
     @InjectRepository(CashRegister)
     private readonly cashRegisterRepo: Repository<CashRegister>,
-    private readonly dataSource: DataSource,
   ) {}
 
-  // Mantenemos solo el mapeo de user
-  private async getUUIDFromUserAuthById(id: number): Promise<string> {
-    const result = await this.dataSource.query(
-      'SELECT id_user FROM user_auth WHERE migration_sync_id = $1',
-      [id],
-    );''
-    if (!result || result.length === 0) {
-      throw new Error(`No se encontró usuario con id = ${id} en user_auth`);
-    }
-    return result[0].id_user;
-  }
-
   async create(dto: CreateCashRegisterDto): Promise<CashRegister> {
-    const userUUID = await this.getUUIDFromUserAuthById(+dto.id_user);
+    // ✅ Ya no se hace ningún mapeo, id_user viene como UUID directamente
+    const userUUID = dto.id_user;
 
-    // Validar si ya existe por cash_register_code
+    // Buscar si ya existe por cash_register_code
     const existing = await this.cashRegisterRepo.findOne({
       where: { cash_register_code: dto.id_cash_register },
     });
@@ -39,25 +27,32 @@ export class CashRegisterService {
         ? new Date(dto.last_closing_date)
         : null;
       existing.updated_at = new Date();
+
+      // ✅ TypeORM devuelve siempre un solo objeto aquí, sin error de tipos
       return await this.cashRegisterRepo.save(existing);
     }
 
+    // Crear nueva caja
     const cashRegister = this.cashRegisterRepo.create({
       id_cash_register: randomUUID(),
-      cash_register_code: dto.id_cash_register, 
-      id_user: userUUID,
+      cash_register_code: dto.id_cash_register,
+      id_user: userUUID, // 👈 ya es UUID
       id_state: dto.id_state,
       opennig_date: new Date(dto.opennig_date),
-      last_closing_date: dto.last_closing_date ? new Date(dto.last_closing_date) : null,
-      id_local: dto.id_local, 
-      id_group_serie: dto.id_group_serie || null,  
+      last_closing_date: dto.last_closing_date
+        ? new Date(dto.last_closing_date)
+        : null,
+      id_local: dto.id_local,
+      id_group_serie: dto.id_group_serie || null,
       id_work_shift: dto.id_work_shift,
       created_at: new Date(),
       updated_at: new Date(),
     });
-    
 
-    return await this.cashRegisterRepo.save(cashRegister);
+    const result = await this.cashRegisterRepo.save(cashRegister);
+
+    // ✅ TypeORM devuelve un solo registro, lo casteamos por seguridad
+    return result as CashRegister;
   }
 
   async update(cashRegisterCode: number, data: { id_state: number }) {
@@ -70,7 +65,6 @@ export class CashRegisterService {
     caja.id_state = data.id_state;
     caja.updated_at = new Date();
 
-    await this.cashRegisterRepo.save(caja);
-    return caja;
+    return await this.cashRegisterRepo.save(caja);
   }
 }

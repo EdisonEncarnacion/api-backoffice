@@ -14,15 +14,15 @@ export class UsuariosService {
 
     const query = `
       SELECT
-        ua.migration_sync_id,
-        ua.id_user,
-        ua.username,
-        ua.password,
-        ua.card_number,
-        ul.local_id
-      FROM user_local ul
-      JOIN user_auth ua ON ul.user_auth_id = ua.id_user
-      WHERE ul.local_id = $1
+      ua.id_user,
+      ua.username,
+      ua.password,
+      ua.card_number,
+      ul.local_id
+    FROM user_local ul
+    JOIN user_auth ua ON ul.user_auth_id = ua.id_user
+    WHERE ul.local_id = $1;
+
     `;
 
     try {

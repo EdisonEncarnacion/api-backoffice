@@ -3,8 +3,8 @@ export class CreateCashRegisterDto {
     @IsNumber()
     id_cash_register: number;
 
-    @IsNumber()
-    id_user: number;
+    @IsUUID()
+    id_user: string;
 
     @IsNumber()
     id_state: number;
@@ -16,12 +16,11 @@ export class CreateCashRegisterDto {
     @IsDateString()
     last_closing_date?: string | null; 
 
-
     @IsUUID()        
     id_local: string;
 
-    @IsNumber()
-    id_work_shift: number;
+    @IsUUID()
+    id_work_shift: string;
 
     @IsOptional()
     @IsUUID()

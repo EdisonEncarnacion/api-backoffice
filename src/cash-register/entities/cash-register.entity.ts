@@ -25,8 +25,9 @@ export class CashRegister {
     @Column('uuid')
     id_user: string;
 
-    @Column()
-    id_work_shift: number; 
+    @Column('uuid')
+    id_work_shift: string;
+
 
     @Column({ type: 'timestamp' })
     created_at: Date;
