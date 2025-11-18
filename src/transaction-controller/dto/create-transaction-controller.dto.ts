@@ -1,17 +1,17 @@
-import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateTransactionControllerDto {
-  @IsInt()
-  migration_sync_id: number; 
+  @IsUUID()
+  id_transaction: string; 
 
   @IsOptional()
   @IsString()
   internal_code?: string;
 
-  @IsInt()
+  @IsNumber()
   id_side: number;
 
-  @IsInt()
+  @IsNumber()
   id_state_transaction: number;
 
   @IsNumber()
@@ -39,9 +39,9 @@ export class CreateTransactionControllerDto {
   total: number;
 
   @IsOptional()
-  @IsInt()
+  @IsNumber()
   id_sale_document_type?: number | null;
 
-  @IsInt()
+  @IsNumber()
   id_product: number;
 }

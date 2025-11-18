@@ -2,8 +2,8 @@ import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity('transaction_controller')
 export class TransactionController {
-  @PrimaryColumn('int') 
-  migration_sync_id: number;  
+  @PrimaryColumn('uuid') 
+  id_transaction: string;
 
   @Column({ nullable: true })
   internal_code: string;
@@ -23,9 +23,8 @@ export class TransactionController {
   @Column()
   date: string;
 
-  @Column({ type: 'time', nullable: true })   
+  @Column({ type: 'time', nullable: true })
   time: string | null;
-
 
   @Column({ nullable: true })
   controller: string;
@@ -38,10 +37,10 @@ export class TransactionController {
 
   @Column('int', { nullable: true })
   id_sale_document_type: number | null;
-  
+
   @Column('int')
   id_product: number;
 
-  @Column('uuid')
-  id_hose: string;
+  @Column('uuid', { nullable: true })
+  id_hose: string | null;
 }
