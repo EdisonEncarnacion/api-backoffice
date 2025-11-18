@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SalesModule } from './sales/sales.module';
 import { CashRegisterModule } from './cash-register/cash-register.module';
 import { DepositModule } from './deposit/deposit.module';
-import { UsuariosModule } from './usuarios/usuarios.module';
 import { SideModule } from './side/side.module'; 
 import { ClientModule } from './client/client.module';
 import { FlowMeterModule } from './flow-meter/flow-meter.module';
@@ -14,9 +13,20 @@ import { GeneralTypeModule } from './general-type/general-type.module';
 import { PaymentsModule } from './payments/payments.module';
 import { TransactionControllerModule } from './transaction-controller/transaction-controller.module';
 import { SerieModule } from './serie/serie.module';
-import { ProductModule } from './product/product.module';
-import { StockModule } from './product/stock/stock.module';
 import { GroupSerieModule } from './group-serie/group-serie.module';
+import { DriverModule } from './driver/driver.module';
+import { VehicleModule } from './vehicle/vehicle.module';
+import { AccountTypeModule } from './account-type/account-type.module';
+import { AccountCardTypeModule } from './account-card-type/account-card-type.module';
+import { AccountModule } from './account/account.module';
+import { AccountProductModule } from './account-product/account-product.module';
+import { AccountCardModule } from './account-card/account-card.module';
+import { MovementTypeModule } from './movement-type/movement-type.module';
+import { ProductModule } from './product/product.module';
+import { ProductLocalModule } from './product-local/product-local.module';
+import { UserModule } from './user/user.module';
+import { EmployeeModule } from './employee/employee.module';
+import { MovementModule } from './movement/movement.module';
 
 
 @Module({
@@ -44,7 +54,6 @@ import { GroupSerieModule } from './group-serie/group-serie.module';
     SalesModule,
     CashRegisterModule,
     DepositModule,
-    UsuariosModule,
     SideModule,
     ClientModule,
     FlowMeterModule,
@@ -53,7 +62,7 @@ import { GroupSerieModule } from './group-serie/group-serie.module';
     TransactionControllerModule,
     SerieModule,
     ProductModule, 
-    StockModule, GroupSerieModule,  
+    ProductLocalModule, GroupSerieModule, DriverModule, VehicleModule, AccountTypeModule, AccountCardTypeModule, AccountModule, AccountProductModule, AccountCardModule, MovementTypeModule, UserModule, EmployeeModule, MovementModule,  
 
   ],
 })
