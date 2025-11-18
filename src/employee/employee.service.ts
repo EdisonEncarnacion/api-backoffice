@@ -1,0 +1,42 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Employee } from './entities/employee.entity';
+
+@Injectable()
+export class EmployeeService {
+  constructor(
+    @InjectRepository(Employee)
+    private readonly employeeRepository: Repository<Employee>,
+  ) {}
+
+  async getEmployeesForSync(since?: string, local_id?: string) {
+    if (!local_id) return [];
+
+    const query = this.employeeRepository
+      .createQueryBuilder('e')
+      .innerJoin('user_auth', 'u', 'u.id_user = e.id_user')
+      .innerJoin('user_local', 'ul', 'ul.user_auth_id = u.id_user')
+      .where('ul.local_id = :local_id', { local_id });
+
+    if (since) {
+      query.andWhere('e.updated_at > :since', { since });
+    } else {
+      query.andWhere('(e.updated_sync_at IS NULL OR e.updated_at > e.updated_sync_at)');
+    }
+
+    const employees = await query.getMany();
+
+    return employees.map((e) => ({
+      id_employee: e.id_employee,
+      first_name: e.first_name,
+      last_name: e.last_name,
+      document_number: e.document_number,
+      phone_number: e.phone_number,
+      email: e.email,
+      state: e.state,
+      id_user: e.id_user,
+      updated_at: e.updated_at,
+    }));
+  }
+}
