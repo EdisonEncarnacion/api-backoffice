@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Product } from './entities/product.entity';
+import { ProductLocal } from './entities/product-local.entity';
 import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
-import { Product } from './entities/product.entity';
-import { UuidMapperService } from '../shared/uuid-mapper.service'; 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product])],
+  imports: [TypeOrmModule.forFeature([Product, ProductLocal])],
+  providers: [ProductService],
   controllers: [ProductController],
-  providers: [ProductService, UuidMapperService], 
 })
 export class ProductModule {}

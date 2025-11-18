@@ -1,20 +1,25 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 
-@Controller('sync/product')
+@Controller('sync')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post()
-  async create(@Body() dto: any) {
-    return this.productService.createOrUpdate(dto);
+  @Get('product')
+  async getProducts(@Query('since') since?: string) {
+    return this.productService.getProductsForSync(since);
   }
 
- // 🔹 Nuevo: solo devuelve productos pendientes
- @Get()
- async findPendingSync() {
-   return this.productService.findPendingSync();
- }
+  @Get('product/local')
+  async getProductLocal(
+    @Query('local_id') local_id: string,
+    @Query('since') since?: string
+  ) {
+    return this.productService.getProductLocalForSync(local_id, since);
+  }
 
-
+  @Post('product/local')
+  async postProductLocal(@Body() data: any[]) {
+    return this.productService.saveProductLocalFromBranch(data);
+  }
 }
