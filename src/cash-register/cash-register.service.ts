@@ -13,10 +13,8 @@ export class CashRegisterService {
   ) {}
 
   async create(dto: CreateCashRegisterDto): Promise<CashRegister> {
-    // ✅ Ya no se hace ningún mapeo, id_user viene como UUID directamente
     const userUUID = dto.id_user;
 
-    // Buscar si ya existe por cash_register_code
     const existing = await this.cashRegisterRepo.findOne({
       where: { cash_register_code: dto.id_cash_register },
     });
@@ -28,15 +26,13 @@ export class CashRegisterService {
         : null;
       existing.updated_at = new Date();
 
-      // ✅ TypeORM devuelve siempre un solo objeto aquí, sin error de tipos
       return await this.cashRegisterRepo.save(existing);
     }
 
-    // Crear nueva caja
     const cashRegister = this.cashRegisterRepo.create({
       id_cash_register: randomUUID(),
       cash_register_code: dto.id_cash_register,
-      id_user: userUUID, // 👈 ya es UUID
+      id_user: userUUID, 
       id_state: dto.id_state,
       opennig_date: new Date(dto.opennig_date),
       last_closing_date: dto.last_closing_date
@@ -51,7 +47,6 @@ export class CashRegisterService {
 
     const result = await this.cashRegisterRepo.save(cashRegister);
 
-    // ✅ TypeORM devuelve un solo registro, lo casteamos por seguridad
     return result as CashRegister;
   }
 
@@ -67,4 +62,24 @@ export class CashRegisterService {
 
     return await this.cashRegisterRepo.save(caja);
   }
+
+  async updateByCode(cash_register_code: number, data: { id_state: number }) {
+  const caja = await this.cashRegisterRepo.findOne({
+    where: { cash_register_code },
+  });
+
+  if (!caja) {
+    console.warn(`No se encontró caja con cash_register_code = ${cash_register_code}`);
+    return null;
+  }
+
+  caja.id_state = data.id_state;
+  caja.updated_at = new Date();
+
+  const updated = await this.cashRegisterRepo.save(caja);
+  console.log(`Caja ${cash_register_code} actualizada con estado ${data.id_state}`);
+  return updated;
+}
+
+
 }

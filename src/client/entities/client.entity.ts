@@ -30,20 +30,20 @@ export class Client {
   @Column({ type: 'date', nullable: true })
   date_of_birth: Date;
 
-  @Column({ type: 'int', nullable: true })
-  origin_branch_id: number | null;
+  @Column({ type: 'uuid', nullable: true })
+  origin_branch_id: string | null;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'" })
   created_at: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'" })
   updated_at: Date;
 
   @Column({ type: 'timestamp', nullable: true })
   updated_sync_at: Date;
 
   @Column({ type: 'int', nullable: true })
-  state: number; 
+  state: number;
 
 
   @Column({ type: 'char', length: 1, nullable: true })

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Param, Body, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, Body, NotFoundException, Query } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
 
@@ -6,14 +6,13 @@ import { CreateClientDto } from './dto/create-client.dto';
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
-  // --- GET todos los clientes para sincronización
-  @Get('client')
-  async getClients() {
-    return this.clientService.getClientsForSync();
-  }
+@Get('client')
+async getClients(@Query('since') since?: string) {
+  return this.clientService.getClientsForSync(since);
+}
 
-  // --- POST crear cliente desde ventas
-  @Post('client') 
+
+  @Post('client')
   saveOrUpdateClient(@Body() dto: CreateClientDto) {
     return this.clientService.saveOrUpdateClientFromSync(dto);
   }
@@ -26,7 +25,7 @@ export class ClientController {
     }
     return client;
   }
-  
+
   @Put('client/code/:code')
   async updateClientByCode(
     @Param('code') code: string,
@@ -38,5 +37,27 @@ export class ClientController {
     }
     return updated;
   }
-  
+
+
+  @Get('client/document/:document')
+  async getClientByDocument(@Param('document') document: string) {
+    const client = await this.clientService.findByDocumentNumber(document);
+    if (!client) {
+      throw new NotFoundException(`Cliente con documento ${document} no existe`);
+    }
+    return client;
+  }
+
+ 
+  @Put('client/document/:document')
+  async updateClientByDocument(
+    @Param('document') document: string,
+    @Body() dto: CreateClientDto
+  ) {
+    const updated = await this.clientService.updateByDocumentNumber(document, dto);
+    if (!updated) {
+      throw new NotFoundException(`Cliente con documento ${document} no existe`);
+    }
+    return updated;
+  }
 }

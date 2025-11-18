@@ -27,20 +27,22 @@ export class CashRegisterController {
       data: created,
     };
   }
+@Patch('by-code/:cash_register_code')
+async updateCashRegisterByCode(
+  @Param('cash_register_code') cash_register_code: number,
+  @Body() body: { id_state: number },
+) {
+  const updated = await this.cashRegisterService.updateByCode(cash_register_code, body);
 
-  @Patch(':id_cash_register')
-  async updateCashRegister(
-    @Param('id_cash_register') id: number,
-    @Body() body: { id_state: number }
-  ): Promise<{ statusCode: number; message: string }> {
-    const updated = await this.cashRegisterService.update(id, body);
-    if (!updated) {
-      throw new NotFoundException(`Caja ${id} no encontrada`);
-    }
-
-    return {
-      statusCode: 200,
-      message: `Caja ${id} actualizada correctamente`,
-    };
+  if (!updated) {
+    throw new NotFoundException(`Caja con código ${cash_register_code} no encontrada`);
   }
+
+  return {
+    statusCode: 200,
+    message: `Caja con código ${cash_register_code} actualizada correctamente`,
+  };
+}
+
+
 }

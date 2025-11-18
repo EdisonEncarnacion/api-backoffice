@@ -66,7 +66,7 @@ export class DepositService {
     if (existingDeposit) {
       existingDeposit.total_amount = depositDto.total_amount;
       existingDeposit.id_currency = depositDto.id_currency;
-      existingDeposit.state = depositDto.state;
+     // existingDeposit.state = depositDto.state;
       existingDeposit.updated_at = new Date();
       existingDeposit.date_process = new Date(depositDto.date_process);
     

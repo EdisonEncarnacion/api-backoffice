@@ -9,7 +9,7 @@ export class CreateClientDto {
   phone_number: string;    
   email: string;
   date_of_birth?: Date;
-  origin_branch_id: number | null;
+  origin_branch_id: string | null; 
   created_at?: Date;
   updated_at?: Date;
   state: number; 
