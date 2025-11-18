@@ -1,6 +1,17 @@
-import { IsInt, IsOptional, IsNumber, IsDateString } from 'class-validator';
+import {
+  IsUUID,
+  IsInt,
+  IsOptional,
+  IsNumber,
+  IsDateString,
+  IsString,
+  Length,
+} from "class-validator";
 
 export class CreateFlowMeterDto {
+  @IsUUID()
+  id: string;
+
   @IsInt()
   side_id: number;
 
@@ -16,16 +27,20 @@ export class CreateFlowMeterDto {
   @IsNumber()
   final_cm: number;
 
-  @IsInt()
-  local_id: number;
+  @IsUUID()
+  local_id: string;
 
   @IsDateString()
   created_at: string;
 
+  @IsOptional()
+  @IsDateString()
+  updated_at?: string | null;
 
   @IsOptional()
-  @IsNumber()
-  state_audit?: number | null;
+  @IsString()
+  @Length(1, 1) 
+  state_audit?: string | null;
 
   @IsInt()
   hose_id: number;

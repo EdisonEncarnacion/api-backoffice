@@ -1,35 +1,37 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn } from "typeorm";
 
-@Entity('flow_meter')
+@Entity("flow_meter")
 export class FlowMeter {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn("uuid")
   id: string;
 
-  @Column('uuid')
+  @Column("uuid")
   side_id: string;
 
-  @Column('uuid')
+  @Column("uuid")
   id_cash_register: string;
 
-  @Column('int')
+  @Column("int")
   product_id: number;
 
-  @Column('float')
+  @Column("float")
   initial_cm: number;
 
-  @Column('float')
+  @Column("float")
   final_cm: number;
 
-  @Column('uuid')
+  @Column("uuid")
   local_id: string;
 
-  @Column('timestamp')
+  @Column("timestamp")
   created_at: Date;
 
-  @Column({ type: 'char', length: 1, nullable: true })
+  @Column("timestamp", { nullable: true })
+  updated_at: Date | null;
+
+  @Column({ type: "char", length: 1, nullable: true })
   state_audit: string | null;
 
-
-  @Column('uuid')
+  @Column("uuid")
   hose_id: string;
 }
