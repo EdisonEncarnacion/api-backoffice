@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
-@Entity({ name: 'sale' }) 
+
+@Entity({ name: 'sale' })
 export class Sale {
   @PrimaryColumn('uuid')
   id_sale: string;
@@ -12,8 +13,10 @@ export class Sale {
 
   @Column('numeric')
   total_amount: number;
+
   @Column('numeric')
   subtotal: number;
+
   @Column('numeric')
   total_discount: number;
 
@@ -28,10 +31,13 @@ export class Sale {
 
   @Column('numeric')
   op_grabada: number;
+
   @Column('numeric')
   total_tax: number;
+
   @Column('numeric')
   exonerado: number;
+
   @Column('numeric')
   transferencia_gratuita: number;
 
@@ -53,12 +59,11 @@ export class Sale {
   @Column('uuid')
   id_user: string;
 
-@Column('int', { name: 'id_document_operation_type', nullable: true })
-id_document_operation_type: number;
+  @Column('int', { name: 'id_document_operation_type', nullable: true })
+  id_document_operation_type: number;
 
-@Column('int', { name: 'id_sale_operation_type', nullable: true })
-id_sale_operation_type: number;
-
+  @Column('int', { name: 'id_sale_operation_type', nullable: true })
+  id_sale_operation_type: number;
 
   @Column('varchar', { nullable: true })
   serie: string;
@@ -135,7 +140,19 @@ id_sale_operation_type: number;
   @Column('jsonb', { nullable: true })
   client_snapshot: any;
 
-    @Column('jsonb', { nullable: true })
+  @Column('jsonb', { nullable: true })
   local_snapshot: any;
+
+  @Column('jsonb', { nullable: true })
+  driver_snapshot: any;
+
+  @Column('jsonb', { nullable: true })
+  vehicle_snapshot: any;
+
+  @Column('uuid', { nullable: true })
+id_driver: string | null;
+
+@Column('uuid', { nullable: true })
+id_vehicle: string | null;
 
 }

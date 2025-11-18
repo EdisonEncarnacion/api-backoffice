@@ -1,25 +1,31 @@
-// src/side/side.service.ts
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Side } from './entities/side.entity';
 
 @Injectable()
 export class SideService {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Side)
+    private readonly sideRepository: Repository<Side>,
+  ) {}
 
-  async getSidesByLocal(localId: string) {
-    const query = `
-      SELECT
-        s.migration_sync_id,
-        s.id_side,
-        s.name,
-        s.product_id,
-        s.state,
-        s.created_at
-      FROM side s
-      WHERE s.local_id = $1 AND s.state_audit = 'A'
-    `;
-    return await this.dataSource.query(query, [localId]);
+  async getSidesByLocal(local_id: string) {
+    const result = await this.sideRepository
+      .createQueryBuilder('s')
+      .where('s.local_id = :local_id', { local_id })
+      .andWhere("s.state_audit = 'A'")
+      .select([
+        's.id_side AS id_side',
+        's.name AS name',
+        's.product_id AS product_id',
+        's.state AS state',
+        's.migration_sync_id AS migration_sync_id',
+        's.created_at AS created_at',
+        's.updated_at AS updated_at',
+      ])
+      .getRawMany();
+
+    return result;
   }
-  
 }

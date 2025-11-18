@@ -28,13 +28,14 @@ export class SalesService {
   async create(dto: CreateSaleDto) {
     try {
       if (dto.state === null || dto.state === undefined) {
-        console.warn('WARNING: "state" no fue enviado en create(). Asignando 1 por defecto.');
+        console.warn('⚠️ "state" no fue enviado en create(). Asignando 1 por defecto.');
         dto.state = 1;
       }
+
       const sale = this.salesRepository.create(dto);
       return await this.salesRepository.save(sale);
     } catch (error) {
-      console.error('Error al guardar venta:', error);
+      console.error('💥 Error al guardar venta:', error);
       throw error;
     }
   }
@@ -43,75 +44,88 @@ export class SalesService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-  
+
     try {
       const { sale, sale_details, payments } = dto;
-  
-      
-      sale.id_sale = sale.id_sale || randomUUID();
-  
-      sale.id_user = sale.id_user;
-      sale.id_payment_type = (await this.uuidMapper.mapIdToUuid('payment_type', +sale.id_payment_type)) as string;
-      sale.id_cash_register = (await this.uuidMapper.mapIdToUuid('cash_register', +sale.id_cash_register)) as string;
 
-  
+      // 🔹 Generar ID si no existe
+      sale.id_sale = sale.id_sale || randomUUID();
+
+      // 🔹 Mapear UUIDs requeridos
+      sale.id_user = sale.id_user;
+      sale.id_payment_type = (await this.uuidMapper.mapIdToUuid(
+        'payment_type',
+        +sale.id_payment_type,
+      )) as string;
+
+      sale.id_cash_register = (await this.uuidMapper.mapIdToUuid(
+        'cash_register',
+        +sale.id_cash_register,
+      )) as string;
+
+      // 🔹 Nuevos campos (no requieren mapeo)
+      sale.id_driver = sale.id_driver ?? null;
+      sale.id_vehicle = sale.id_vehicle ?? null;
+      sale.driver_snapshot = sale.driver_snapshot ?? null;
+      sale.vehicle_snapshot = sale.vehicle_snapshot ?? null;
+
+      // 🔹 Estado y fechas
       if (sale.state === null || sale.state === undefined) {
-        console.warn('WARNING: "state" no fue enviado. Asignando 1 por defecto.');
+        console.warn('⚠️ "state" no fue enviado. Asignando 1 por defecto.');
         sale.state = 1;
       }
-  
+
       sale.updated_at = sale.updated_at ?? sale.created_at ?? new Date();
-  
-      // Guardar venta
+
+      // 🔹 Guardar venta principal
       const createdSale = queryRunner.manager.create(Sale, sale);
       const savedSale = await queryRunner.manager.save(Sale, createdSale);
-  
-      // Guardar detalles
 
-    const details = await Promise.all(
-      sale_details.map(async (detail) => {
-        const newDetail: Partial<SaleDetail> = {
-          ...detail,
-          id_sale_detail: randomUUID(),
-          id_sale: savedSale.id_sale,
-          // 👇 si id_transaction es null, se guarda null
-          id_transaction: detail.id_transaction
-            ? await this.uuidMapper.mapIdToUuid('transaction_controller', +detail.id_transaction)
-            : null,
-          // 👇 si id_side es null, lo enviamos como null
-          id_side: detail.id_side
-            ? await this.uuidMapper.mapIdToUuid('side', +detail.id_side)
-            : null,
-        };
+      // 🔹 Guardar detalles (transaction UUID directo, side mapeado)
+      const details = await Promise.all(
+        sale_details.map(async (detail) => {
+          const newDetail: Partial<SaleDetail> = {
+            ...detail,
+            id_sale_detail: randomUUID(),
+            id_sale: savedSale.id_sale,
 
-        return queryRunner.manager.create(SaleDetail, newDetail);
-      })
-    );
+            // ✅ transaction_controller ya es UUID
+            id_transaction: detail.id_transaction ?? null,
 
+            // ⚙️ side sigue siendo entero → mapeo a UUID
+            id_side: detail.id_side
+              ? await this.uuidMapper.mapIdToUuid('side', +detail.id_side)
+              : null,
+          };
+
+          return queryRunner.manager.create(SaleDetail, newDetail);
+        }),
+      );
 
       await queryRunner.manager.save(SaleDetail, details);
-  
-     
+
+      // 🔹 Guardar pagos
       const paymentEntities = payments.map((payment) =>
         queryRunner.manager.create(Payment, {
           ...payment,
           id_payment: randomUUID(),
           id_sale: savedSale.id_sale,
-        })
+        }),
       );
       await queryRunner.manager.save(Payment, paymentEntities);
-  
+
+      // 🔹 Confirmar transacción
       await queryRunner.commitTransaction();
+
       return { sale: savedSale, details, payments: paymentEntities };
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      console.error('Error al guardar venta con detalles y pagos:', error);
+      console.error('💥 Error al guardar venta con detalles y pagos:', error);
       throw error;
     } finally {
       await queryRunner.release();
     }
   }
-  
 
   findAll() {
     return this.salesRepository.find();

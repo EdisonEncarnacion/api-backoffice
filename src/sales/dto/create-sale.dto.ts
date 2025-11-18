@@ -1,6 +1,7 @@
+// src/sales/dto/create-sale.dto.ts
 export class CreateSaleDto {
-  id_sale: string; 
-  external_sale_id: string; 
+  id_sale: string;
+  external_sale_id: string;
   state: number;
   total_amount: number;
   subtotal: number;
@@ -19,7 +20,6 @@ export class CreateSaleDto {
   id_client: string;
   id_user: string;
 
-  // 👉 nuevos campos
   id_document_operation_type: number;
   id_sale_operation_type: number;
   serie: string;
@@ -46,7 +46,13 @@ export class CreateSaleDto {
   credit_note_amount: number;
   debit_note_amount: number;
   origin: string;
-  client_snapshot: any;
-  local_snapshot: any;
 
+client_snapshot: any;
+local_snapshot: any;
+
+driver_snapshot?: any;
+vehicle_snapshot?: any;
+
+id_driver?: string | null;
+id_vehicle?: string | null;
 }

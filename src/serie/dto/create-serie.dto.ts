@@ -5,7 +5,7 @@ export class CreateSerieDto {
     is_active: boolean;
     correlative_current: number;
     id_sale_document_type: number;
-    id_local: number; // entero de Ventas
+    id_local: string;
     correlative_start?: number = 1;
   }
   

@@ -1,37 +1,49 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity('serie')
 export class Serie {
-  @PrimaryColumn('int')   
-  id_serie: number;
+  @PrimaryColumn('uuid')
+  id_serie: string;
 
-  @Column({ default: 1 }) 
+  @Column({ type: 'int', nullable: true })
   correlative_start: number;
-  
-  @Column()
-  series_number: string;
 
-  @Column()
-  description: string;
-
-  @Column({ default: true })
-  is_active: boolean;
-
-  @Column()
+  @Column({ type: 'int', nullable: true })
   correlative_current: number;
 
-  @Column()
-  id_sale_document_type: number;
+  @Column({ type: 'varchar', length: 20 })
+  series_number: string;
 
-  @Column('uuid')
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  description: string;
+
+  @Column({ type: 'uuid', nullable: true })
+  id_group_serie: string;
+
+  @Column({ type: 'uuid', nullable: true })
+  id_sale_document_type: string;
+
+  @Column({ type: 'uuid', nullable: true })
+  origin_document_type_id: string;
+
+  @Column({ type: 'boolean', default: true })
+  is_active: boolean;
+
+  @Column({ type: 'uuid', nullable: true })
   id_local: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamptz',
+    default: () => "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'",
+  })
   created_at: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamptz',
+    default: () => "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'",
+  })
   updated_at: Date;
 
-  @Column({ default: 'A' })
+  @Column({ type: 'char', length: 1, nullable: true })
   state_audit: string;
 }
