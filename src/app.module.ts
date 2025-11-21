@@ -27,6 +27,7 @@ import { ProductLocalModule } from './product-local/product-local.module';
 import { UserModule } from './user/user.module';
 import { EmployeeModule } from './employee/employee.module';
 import { MovementModule } from './movement/movement.module';
+import { TankModule } from './tank/tank.module';
 
 
 @Module({
@@ -62,7 +63,7 @@ import { MovementModule } from './movement/movement.module';
     TransactionControllerModule,
     SerieModule,
     ProductModule, 
-    ProductLocalModule, GroupSerieModule, DriverModule, VehicleModule, AccountTypeModule, AccountCardTypeModule, AccountModule, AccountProductModule, AccountCardModule, MovementTypeModule, UserModule, EmployeeModule, MovementModule,  
+    ProductLocalModule, GroupSerieModule, DriverModule, VehicleModule, AccountTypeModule, AccountCardTypeModule, AccountModule, AccountProductModule, AccountCardModule, MovementTypeModule, UserModule, EmployeeModule, MovementModule, TankModule,  
 
   ],
 })

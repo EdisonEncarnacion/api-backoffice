@@ -16,7 +16,7 @@ export class FlowMeterService {
   async create(dto: CreateFlowMeterDto): Promise<FlowMeter> {
     try {
       const sideUuid = await this.uuidMapper.mapIdToUuid("side", dto.side_id);
-      const hoseUuid = await this.uuidMapper.mapIdToUuid("hose", dto.hose_id);
+
       const cashRegisterUuid = await this.uuidMapper.mapIdToUuid(
         "cash_register",
         dto.id_cash_register,
@@ -33,7 +33,7 @@ export class FlowMeterService {
         created_at: new Date(dto.created_at),
         updated_at: dto.updated_at ? new Date(dto.updated_at) : new Date(dto.created_at),
         state_audit: "A",
-        hose_id: hoseUuid,
+        hose_id: dto.hose_id ?? null
       } as FlowMeter); 
 
       const saved = await this.repo.save(flowMeter);

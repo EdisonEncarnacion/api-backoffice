@@ -8,7 +8,7 @@ import { GeneralTypeController } from './general-type.controller';
 @Module({
   imports: [TypeOrmModule.forFeature([GeneralType])],
   providers: [GeneralTypeService],
-  controllers: [GeneralTypeController], // 👈 importante
+  controllers: [GeneralTypeController], 
   exports: [GeneralTypeService],
 })
 export class GeneralTypeModule {}

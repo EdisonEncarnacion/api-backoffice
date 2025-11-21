@@ -41,6 +41,4 @@ export class TransactionController {
   @Column('int')
   id_product: number;
 
-  @Column('uuid', { nullable: true })
-  id_hose: string | null;
 }

@@ -31,7 +31,6 @@ export class AccountCardService {
       card_type_id: c.card_type_id,
       vehicle_id: c.vehicle_id,
       account_id: c.account_id,
-      product_id: c.product_id,
       status: c.status,
       state_audit: c.state_audit,
       created_at: c.created_at,

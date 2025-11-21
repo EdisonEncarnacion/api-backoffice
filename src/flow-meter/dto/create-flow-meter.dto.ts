@@ -42,6 +42,9 @@ export class CreateFlowMeterDto {
   @Length(1, 1) 
   state_audit?: string | null;
 
-  @IsInt()
-  hose_id: number;
+  @IsOptional()
+  @IsUUID()
+  hose_id?: string | null;
+
+
 }

@@ -21,9 +21,6 @@ export class AccountCard {
   account_id: string;
 
   @Column({ type: 'int', nullable: true })
-  product_id: number; 
-
-  @Column({ type: 'int', nullable: true })
   status: number;
 
   @Column({ type: 'char', length: 1, nullable: true })

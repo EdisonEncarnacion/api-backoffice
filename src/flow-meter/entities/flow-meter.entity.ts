@@ -32,6 +32,7 @@ export class FlowMeter {
   @Column({ type: "char", length: 1, nullable: true })
   state_audit: string | null;
 
-  @Column("uuid")
-  hose_id: string;
+ @Column("uuid", { nullable: true })
+  hose_id: string | null;
+
 }
