@@ -1,0 +1,36 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { AccountCardProduct } from './entities/account-card-product.entity';
+
+@Injectable()
+export class AccountCardProductService {
+  constructor(
+    @InjectRepository(AccountCardProduct)
+    private readonly repo: Repository<AccountCardProduct>,
+  ) {}
+
+  async getAccountCardProductsForSync(since?: string) {
+    const query = this.repo.createQueryBuilder('acp');
+
+    if (since) {
+      query.where('acp.updated_at > :since', { since });
+    } else {
+      query
+        .where('acp.updated_sync_at IS NULL')
+        .orWhere('acp.updated_at > acp.updated_sync_at');
+    }
+
+    const rows = await query.getMany();
+
+    return rows.map(r => ({
+      id_account_card_product: r.id_account_card_product,
+      is_active: r.is_active,
+      created_at: r.created_at,
+      updated_at: r.updated_at,
+      state_audit: r.state_audit,
+      id_account_card: r.id_account_card,
+      id_product: r.id_product,
+    }));
+  }
+}
