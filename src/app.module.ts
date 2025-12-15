@@ -30,6 +30,8 @@ import { MovementModule } from './movement/movement.module';
 import { TankModule } from './tank/tank.module';
 import { AccountCardProductModule } from './account-card-product/account-card-product.module';
 import { HoseModule } from './hose/hose.module';
+import { BankModule } from './bank/bank.module';
+import { BankAccountModule } from './bank-account/bank-account.module';
 
 
 @Module({
@@ -65,7 +67,7 @@ import { HoseModule } from './hose/hose.module';
     TransactionControllerModule,
     SerieModule,
     ProductModule, 
-    ProductLocalModule, GroupSerieModule, DriverModule, VehicleModule, AccountTypeModule, AccountCardTypeModule, AccountModule, AccountProductModule, AccountCardModule, MovementTypeModule, UserModule, EmployeeModule, MovementModule, TankModule, AccountCardProductModule, HoseModule,  
+    ProductLocalModule, GroupSerieModule, DriverModule, VehicleModule, AccountTypeModule, AccountCardTypeModule, AccountModule, AccountProductModule, AccountCardModule, MovementTypeModule, UserModule, EmployeeModule, MovementModule, TankModule, AccountCardProductModule, HoseModule, BankModule, BankAccountModule,  
 
   ],
 })

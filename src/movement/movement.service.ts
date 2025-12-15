@@ -1,33 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Movement } from './entities/movement.entity';
+import { DataSource } from 'typeorm';
+import { CreateMovementDto } from './dto/create-movement.dto';
 
 @Injectable()
 export class MovementService {
-  constructor(
-    @InjectRepository(Movement)
-    private readonly movementRepository: Repository<Movement>,
-  ) {}
+  constructor(private readonly dataSource: DataSource) {}
 
-  async insertOrUpdateMovements(movements: any[]) {
-    const inserted: string[] = [];
-    const updated: string[] = [];
+  async insertMovement(dto: CreateMovementDto) {
+        const query = `
+        SELECT * FROM insert_movement_with_balance_update(
+          $1, $2, $3, $4, $5, $6, $7
+        )
+      `;
+          const params = [
+          dto.account_id || null,
+          dto.amount,
+          dto.reference_document || null,
+          dto.card_id || null,
+          dto.description || null,
+          dto.type_id,
+          dto.status || 'A'
+        ];
 
-    for (const m of movements) {
-      const exists = await this.movementRepository.findOne({
-        where: { id_movement: m.id_movement },
-      });
 
-      if (exists) {
-        await this.movementRepository.update(m.id_movement, m);
-        updated.push(m.id_movement);
-      } else {
-        await this.movementRepository.save(m);
-        inserted.push(m.id_movement);
-      }
-    }
-
-    return { inserted, updated };
+    const result = await this.dataSource.query(query, params);
+    return result?.[0]; 
   }
 }
+

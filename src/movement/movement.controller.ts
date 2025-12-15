@@ -1,20 +1,18 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { MovementService } from './movement.service';
+import { CreateMovementDto } from './dto/create-movement.dto';
 
 @Controller('sync')
 export class MovementController {
   constructor(private readonly movementService: MovementService) {}
 
   @Post('movement')
-  async insertOrUpdate(@Body() body: { movements: any[] }) {
-    const { inserted, updated } = await this.movementService.insertOrUpdateMovements(
-      body.movements,
-    );
+  async insert(@Body() dto: CreateMovementDto) {
+    const result = await this.movementService.insertMovement(dto);
 
     return {
-      message: 'Movimientos procesados correctamente',
-      inserted: inserted.length,
-      updated: updated.length,
+      message: 'Movimiento procesado correctamente',
+      data: result,
     };
   }
 }
