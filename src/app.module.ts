@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SalesModule } from './sales/sales.module';
 import { CashRegisterModule } from './cash-register/cash-register.module';
 import { DepositModule } from './deposit/deposit.module';
-import { SideModule } from './side/side.module'; 
+import { SideModule } from './side/side.module';
 import { ClientModule } from './client/client.module';
 import { FlowMeterModule } from './flow-meter/flow-meter.module';
 import { GeneralTypeModule } from './general-type/general-type.module';
@@ -32,6 +32,7 @@ import { AccountCardProductModule } from './account-card-product/account-card-pr
 import { HoseModule } from './hose/hose.module';
 import { BankModule } from './bank/bank.module';
 import { BankAccountModule } from './bank-account/bank-account.module';
+import { CurrencyModule } from './currency/currency.module';
 
 
 @Module({
@@ -66,9 +67,9 @@ import { BankAccountModule } from './bank-account/bank-account.module';
     PaymentsModule,
     TransactionControllerModule,
     SerieModule,
-    ProductModule, 
-    ProductLocalModule, GroupSerieModule, DriverModule, VehicleModule, AccountTypeModule, AccountCardTypeModule, AccountModule, AccountProductModule, AccountCardModule, MovementTypeModule, UserModule, EmployeeModule, MovementModule, TankModule, AccountCardProductModule, HoseModule, BankModule, BankAccountModule,  
+    ProductModule,
+    ProductLocalModule, GroupSerieModule, DriverModule, VehicleModule, AccountTypeModule, AccountCardTypeModule, AccountModule, AccountProductModule, AccountCardModule, MovementTypeModule, UserModule, EmployeeModule, MovementModule, TankModule, AccountCardProductModule, HoseModule, BankModule, BankAccountModule, CurrencyModule,
 
   ],
 })
-export class AppModule {}
+export class AppModule { }
