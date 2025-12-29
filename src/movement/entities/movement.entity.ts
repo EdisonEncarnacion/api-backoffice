@@ -8,8 +8,8 @@ export class Movement {
   @Column({ type: 'uuid' })
   account_id: string;
 
-  @Column({ type: 'uuid' })
-  type_id: string;
+  @Column({ type: 'int' })
+  type_id: number;
 
   @Column({ type: 'uuid', nullable: true })
   card_id: string;
@@ -40,4 +40,11 @@ export class Movement {
 
   @Column({ type: 'timestamptz', nullable: true })
   updated_sync_at: Date;
+
+  @Column({ type: 'uuid', nullable: true })
+  created_by: string;
+
+  @Column({ type: 'uuid', nullable: true })
+  updated_by: string;
+
 }

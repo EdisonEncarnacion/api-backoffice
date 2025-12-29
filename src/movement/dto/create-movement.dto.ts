@@ -1,9 +1,47 @@
+import { IsUUID, IsOptional, IsNumber, IsString } from 'class-validator';
+
 export class CreateMovementDto {
-  account_id?: string;
+
+  @IsUUID()
+  id_movement: string; // ✅ OBLIGATORIO
+
+  @IsUUID()
+  account_id: string;
+
+  @IsOptional()
+  @IsUUID()
   card_id?: string;
-  amount: number;
-  reference_document?: string;
-  description?: string;
+
+  @IsNumber()
   type_id: number;
-  status?: string;       // <-- AGREGADO // <-- YA ESTABA
+
+  @IsString()
+  status: string;
+
+  @IsOptional()
+  @IsString()
+  reference_document?: string;
+
+  @IsNumber()
+  amount: number;
+
+  @IsOptional()
+  @IsNumber()
+  balance_after?: number;
+
+  @IsOptional()
+  issued_at?: Date;
+
+  @IsOptional()
+  description?: string;
+
+  @IsOptional()
+  created_at?: Date;
+
+  @IsOptional()
+  updated_at?: Date;
+
+  @IsOptional()
+  @IsUUID()
+  created_by?: string;
 }
