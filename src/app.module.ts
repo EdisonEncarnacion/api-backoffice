@@ -36,6 +36,7 @@ import { CurrencyModule } from './currency/currency.module';
 import { AuthorizationCodeModule } from './authorization-code/authorization-code.module';
 import { RoleModule } from './role/role.module';
 import { ModuleModule } from './module/module.module';
+import { RoleAccessModule } from './role-access/role-access.module';
 
 
 @Module({
@@ -71,7 +72,7 @@ import { ModuleModule } from './module/module.module';
     TransactionControllerModule,
     SerieModule,
     ProductModule,
-    ProductLocalModule, GroupSerieModule, DriverModule, VehicleModule, AccountTypeModule, AccountCardTypeModule, AccountModule, AccountProductModule, AccountCardModule, MovementTypeModule, UserModule, EmployeeModule, MovementModule, TankModule, AccountCardProductModule, HoseModule, BankModule, BankAccountModule, CurrencyModule, AuthorizationCodeModule, RoleModule, ModuleModule,
+    ProductLocalModule, GroupSerieModule, DriverModule, VehicleModule, AccountTypeModule, AccountCardTypeModule, AccountModule, AccountProductModule, AccountCardModule, MovementTypeModule, UserModule, EmployeeModule, MovementModule, TankModule, AccountCardProductModule, HoseModule, BankModule, BankAccountModule, CurrencyModule, AuthorizationCodeModule, RoleModule, ModuleModule, RoleAccessModule,
 
   ],
 })
