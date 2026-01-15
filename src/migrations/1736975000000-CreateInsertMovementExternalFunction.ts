@@ -1,0 +1,96 @@
+import { MigrationInterface, QueryRunner } from 'typeorm';
+
+export class CreateInsertMovementExternalFunction1736975000000 implements MigrationInterface {
+    name = 'CreateInsertMovementExternalFunction1736975000000';
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        // Primero eliminamos la función si existe para evitar conflictos de versiones anteriores
+        await queryRunner.query(`
+            DROP FUNCTION IF EXISTS insert_movement_external(
+                UUID, UUID, UUID, INT, VARCHAR, VARCHAR, NUMERIC, NUMERIC, 
+                TIMESTAMPTZ, TEXT, TIMESTAMPTZ, TIMESTAMPTZ, UUID
+            );
+        `);
+
+        // Creamos la función
+        await queryRunner.query(`
+            CREATE OR REPLACE FUNCTION insert_movement_external(
+                p_id_movement UUID,
+                p_account_id UUID,
+                p_card_id UUID,
+                p_type_id INT,
+                p_status VARCHAR,
+                p_reference_document VARCHAR,
+                p_amount NUMERIC,
+                p_balance_after NUMERIC,
+                p_issued_at TIMESTAMPTZ,
+                p_description TEXT,
+                p_created_at TIMESTAMPTZ,
+                p_updated_at TIMESTAMPTZ,
+                p_created_by UUID
+            )
+            RETURNS VOID
+            LANGUAGE plpgsql
+            AS $$
+            BEGIN
+                INSERT INTO movement (
+                    id_movement,
+                    account_id,
+                    card_id,
+                    type_id,
+                    status,
+                    reference_document,
+                    amount,
+                    balance_after,
+                    issued_at,
+                    description,
+                    created_by,
+                    updated_by,
+                    created_at,
+                    updated_at,
+                    state_audit
+                )
+                VALUES (
+                    p_id_movement,
+                    p_account_id,
+                    p_card_id,
+                    p_type_id,
+                    p_status,
+                    p_reference_document,
+                    p_amount,
+                    p_balance_after,
+                    p_issued_at,
+                    p_description,
+                    p_created_by,
+                    p_created_by,
+                    p_created_at,
+                    p_updated_at,
+                    'A'
+                )
+                ON CONFLICT (id_movement) DO NOTHING;
+
+                IF p_card_id IS NOT NULL THEN
+                    UPDATE account_card
+                    SET balance = balance + p_amount,
+                        updated_at = NOW()
+                    WHERE id_account_card = p_card_id;
+                ELSE
+                    UPDATE account
+                    SET balance = balance + p_amount,
+                        updated_at = NOW()
+                    WHERE id_account = p_account_id;
+                END IF;
+            END;
+            $$;
+        `);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`
+            DROP FUNCTION IF EXISTS insert_movement_external(
+                UUID, UUID, UUID, INT, VARCHAR, VARCHAR, NUMERIC, NUMERIC, 
+                TIMESTAMPTZ, TEXT, TIMESTAMPTZ, TIMESTAMPTZ, UUID
+            );
+        `);
+    }
+}

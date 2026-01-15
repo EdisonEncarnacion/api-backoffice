@@ -2,6 +2,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MigrationService } from './shared/migration.service';
 
 import { SalesModule } from './sales/sales.module';
 import { CashRegisterModule } from './cash-register/cash-register.module';
@@ -58,6 +59,8 @@ import { RoleAccessModule } from './role-access/role-access.module';
         database: configService.get<string>('DATABASE_NAME'),
         synchronize: false,
         autoLoadEntities: true,
+        migrations: [__dirname + '/migrations/**/*.js'],
+        migrationsRun: false, // Usaremos MigrationService en su lugar
       }),
     }),
 
@@ -75,5 +78,6 @@ import { RoleAccessModule } from './role-access/role-access.module';
     ProductLocalModule, GroupSerieModule, DriverModule, VehicleModule, AccountTypeModule, AccountCardTypeModule, AccountModule, AccountProductModule, AccountCardModule, MovementTypeModule, UserModule, EmployeeModule, MovementModule, TankModule, AccountCardProductModule, HoseModule, BankModule, BankAccountModule, CurrencyModule, AuthorizationCodeModule, RoleModule, ModuleModule, RoleAccessModule,
 
   ],
+  providers: [MigrationService],
 })
 export class AppModule { }
