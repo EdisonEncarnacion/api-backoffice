@@ -42,6 +42,7 @@ import { AuthorizationCodeModule } from './authorization-code/authorization-code
 import { RoleModule } from './role/role.module';
 import { ModuleModule } from './module/module.module';
 import { RoleAccessModule } from './role-access/role-access.module';
+import { ReceiptConfigurationModule } from './receipt-configuration/receipt-configuration.module';
 
 @Module({
   imports: [
@@ -88,6 +89,7 @@ import { RoleAccessModule } from './role-access/role-access.module';
     RoleModule,
     ModuleModule,
     RoleAccessModule,
+    ReceiptConfigurationModule,
   ],
 })
 export class AppModule implements NestModule {

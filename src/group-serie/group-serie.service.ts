@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { GroupSerie } from './entities/group-serie.entity';
 
 @Injectable()
 export class GroupSerieService {
-  constructor(
-    @InjectRepository(GroupSerie)
-    private readonly groupSerieRepository: Repository<GroupSerie>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getGroupSeriesByLocal(local_id: string) {
-    const result = await this.groupSerieRepository
+    const dataSource = await this.tenantConnection.getDataSource();
+    const groupSerieRepository = dataSource.getRepository(GroupSerie);
+
+    const result = await groupSerieRepository
       .createQueryBuilder('g')
       .where('g.id_local = :local_id', { local_id })
       .andWhere("g.state_audit = 'A'")
@@ -29,3 +28,4 @@ export class GroupSerieService {
     return result;
   }
 }
+

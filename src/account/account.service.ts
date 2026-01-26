@@ -1,28 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Account } from './entities/account.entity';
 
 @Injectable()
 export class AccountService {
-  constructor(
-    @InjectRepository(Account)
-    private readonly accountRepository: Repository<Account>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getAccountsForSync(since?: string) {
-    const query = this.accountRepository.createQueryBuilder('account');
+    const dataSource = await this.tenantConnection.getDataSource();
+    const accountRepository = dataSource.getRepository(Account);
+
+    const query = accountRepository.createQueryBuilder('account');
 
     if (since) {
       query.where('account.updated_at > :since', { since });
     } else {
-      query.where('account.updated_sync_at IS NULL')
-           .orWhere('account.updated_at > account.updated_sync_at');
+      query
+        .where('account.updated_sync_at IS NULL')
+        .orWhere('account.updated_at > account.updated_sync_at');
     }
 
     const accounts = await query.getMany();
 
-    return accounts.map(a => ({
+    return accounts.map((a) => ({
       id_account: a.id_account,
       credit_line: a.credit_line,
       balance: a.balance,
@@ -41,3 +41,4 @@ export class AccountService {
     }));
   }
 }
+

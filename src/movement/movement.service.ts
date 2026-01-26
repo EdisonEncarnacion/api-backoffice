@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { CreateMovementDto } from './dto/create-movement.dto';
 
 @Injectable()
 export class MovementService {
-  constructor(private readonly dataSource: DataSource) { }
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async insertMovement(dto: CreateMovementDto) {
+    const dataSource = await this.tenantConnection.getDataSource();
+
     const query = `
     SELECT insert_movement_external(
       $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13
@@ -29,9 +31,9 @@ export class MovementService {
       dto.created_by,
     ];
 
-    await this.dataSource.query(query, params);
+    await dataSource.query(query, params);
     return { ok: true };
   }
-
 }
+
 

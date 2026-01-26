@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Employee } from './entities/employee.entity';
 
 @Injectable()
 export class EmployeeService {
-  constructor(
-    @InjectRepository(Employee)
-    private readonly employeeRepository: Repository<Employee>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getEmployeesForSync(since?: string, local_id?: string) {
     if (!local_id) return [];
 
-    const query = this.employeeRepository
+    const dataSource = await this.tenantConnection.getDataSource();
+    const employeeRepository = dataSource.getRepository(Employee);
+
+    const query = employeeRepository
       .createQueryBuilder('e')
       .innerJoin('user_auth', 'u', 'u.id_user = e.id_user')
       .innerJoin('user_local', 'ul', 'ul.user_auth_id = u.id_user')

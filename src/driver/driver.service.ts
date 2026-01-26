@@ -1,30 +1,30 @@
 // src/driver/driver.service.ts
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Driver } from './entities/driver.entity';
 import { CreateDriverDto } from './dto/create-driver.dto';
 
 @Injectable()
 export class DriverService {
-  constructor(
-    @InjectRepository(Driver)
-    private readonly driverRepository: Repository<Driver>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getDriversForSync(since?: string) {
-    const query = this.driverRepository.createQueryBuilder('driver');
+    const dataSource = await this.tenantConnection.getDataSource();
+    const driverRepository = dataSource.getRepository(Driver);
+
+    const query = driverRepository.createQueryBuilder('driver');
 
     if (since) {
       query.where('driver.updated_at > :since', { since });
     } else {
-      query.where('driver.updated_sync_at IS NULL')
-           .orWhere('driver.updated_at > driver.updated_sync_at');
+      query
+        .where('driver.updated_sync_at IS NULL')
+        .orWhere('driver.updated_at > driver.updated_sync_at');
     }
 
     const drivers = await query.getMany();
 
-    return drivers.map(d => ({
+    return drivers.map((d) => ({
       id_driver: d.id_driver,
       code_driver: d.code_driver,
       license: d.license,
@@ -42,11 +42,14 @@ export class DriverService {
 
   async saveOrUpdateDriverFromSync(dto: CreateDriverDto) {
     try {
+      const dataSource = await this.tenantConnection.getDataSource();
+      const driverRepository = dataSource.getRepository(Driver);
+
       if (dto.state === null || dto.state === undefined) {
         dto.state = 1;
       }
 
-      const existing = await this.driverRepository.findOne({
+      const existing = await driverRepository.findOne({
         where: { document_number: dto.document_number },
       });
 
@@ -57,23 +60,25 @@ export class DriverService {
           updated_at: new Date(),
           updated_sync_at: new Date(),
         });
-        const updated = await this.driverRepository.save(existing);
+        const updated = await driverRepository.save(existing);
         return { ...updated, message: 'Driver actualizado correctamente' };
       }
 
-      const newDriver = this.driverRepository.create({
+      const newDriver = driverRepository.create({
         ...dto,
         state: dto.state ?? 1,
         created_at: new Date(),
         updated_at: new Date(),
         updated_sync_at: new Date(),
       });
-      const saved = await this.driverRepository.save(newDriver);
+      const saved = await driverRepository.save(newDriver);
       return { ...saved, message: 'Driver creado correctamente' };
-
     } catch (err: any) {
       if (err.code === '23505' && err.detail?.includes('document_number')) {
-        const existing = await this.driverRepository.findOne({
+        const dataSource = await this.tenantConnection.getDataSource();
+        const driverRepository = dataSource.getRepository(Driver);
+
+        const existing = await driverRepository.findOne({
           where: { document_number: dto.document_number },
         });
         if (existing) {
@@ -83,7 +88,7 @@ export class DriverService {
             updated_at: new Date(),
             updated_sync_at: new Date(),
           });
-          const updated = await this.driverRepository.save(existing);
+          const updated = await driverRepository.save(existing);
           return { ...updated, message: 'Driver ya existía, actualizado correctamente' };
         }
       }
@@ -92,17 +97,22 @@ export class DriverService {
   }
 
   async findByDocument(document: string) {
-    return this.driverRepository.findOne({ where: { document_number: document } });
+    const dataSource = await this.tenantConnection.getDataSource();
+    const driverRepository = dataSource.getRepository(Driver);
+    return driverRepository.findOne({ where: { document_number: document } });
   }
 
   async updateByDocument(document: string, dto: CreateDriverDto) {
     const driver = await this.findByDocument(document);
     if (!driver) return null;
 
+    const dataSource = await this.tenantConnection.getDataSource();
+    const driverRepository = dataSource.getRepository(Driver);
+
     Object.assign(driver, dto, {
       updated_at: new Date(),
       updated_sync_at: new Date(),
     });
-    return this.driverRepository.save(driver);
+    return driverRepository.save(driver);
   }
 }

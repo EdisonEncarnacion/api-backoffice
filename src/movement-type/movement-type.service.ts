@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { MovementType } from './entities/movement-type.entity';
 
 @Injectable()
 export class MovementTypeService {
-  constructor(
-    @InjectRepository(MovementType)
-    private readonly movementTypeRepository: Repository<MovementType>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getMovementTypesForSync(since?: string) {
-    const query = this.movementTypeRepository.createQueryBuilder('movement_type');
+    const dataSource = await this.tenantConnection.getDataSource();
+    const movementTypeRepository = dataSource.getRepository(MovementType);
+
+    const query = movementTypeRepository.createQueryBuilder('movement_type');
 
     if (since) {
       query.where('movement_type.updated_at > :since', { since });
@@ -19,7 +18,7 @@ export class MovementTypeService {
 
     const types = await query.getMany();
 
-    return types.map(mt => ({
+    return types.map((mt) => ({
       id_movement_document_type: mt.id_movement_document_type,
       code: mt.code,
       name: mt.name,
@@ -30,3 +29,4 @@ export class MovementTypeService {
     }));
   }
 }
+

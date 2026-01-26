@@ -1,21 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { CashRegister } from './entities/cash-register.entity';
 import { CreateCashRegisterDto } from './dto/create-cash-register.dto';
 import { randomUUID } from 'crypto';
 
 @Injectable()
 export class CashRegisterService {
-  constructor(
-    @InjectRepository(CashRegister)
-    private readonly cashRegisterRepo: Repository<CashRegister>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async create(dto: CreateCashRegisterDto): Promise<CashRegister> {
+    const dataSource = await this.tenantConnection.getDataSource();
+    const cashRegisterRepo = dataSource.getRepository(CashRegister);
+
     const userUUID = dto.id_user;
 
-    const existing = await this.cashRegisterRepo.findOne({
+    const existing = await cashRegisterRepo.findOne({
       where: { cash_register_code: dto.id_cash_register },
     });
 
@@ -26,13 +25,13 @@ export class CashRegisterService {
         : null;
       existing.updated_at = new Date();
 
-      return await this.cashRegisterRepo.save(existing);
+      return await cashRegisterRepo.save(existing);
     }
 
-    const cashRegister = this.cashRegisterRepo.create({
+    const cashRegister = cashRegisterRepo.create({
       id_cash_register: randomUUID(),
       cash_register_code: dto.id_cash_register,
-      id_user: userUUID, 
+      id_user: userUUID,
       id_state: dto.id_state,
       opennig_date: new Date(dto.opennig_date),
       last_closing_date: dto.last_closing_date
@@ -45,13 +44,16 @@ export class CashRegisterService {
       updated_at: new Date(),
     });
 
-    const result = await this.cashRegisterRepo.save(cashRegister);
+    const result = await cashRegisterRepo.save(cashRegister);
 
     return result as CashRegister;
   }
 
   async update(cashRegisterCode: number, data: { id_state: number }) {
-    const caja = await this.cashRegisterRepo.findOneBy({
+    const dataSource = await this.tenantConnection.getDataSource();
+    const cashRegisterRepo = dataSource.getRepository(CashRegister);
+
+    const caja = await cashRegisterRepo.findOneBy({
       cash_register_code: cashRegisterCode,
     });
 
@@ -60,26 +62,28 @@ export class CashRegisterService {
     caja.id_state = data.id_state;
     caja.updated_at = new Date();
 
-    return await this.cashRegisterRepo.save(caja);
+    return await cashRegisterRepo.save(caja);
   }
 
   async updateByCode(cash_register_code: number, data: { id_state: number }) {
-  const caja = await this.cashRegisterRepo.findOne({
-    where: { cash_register_code },
-  });
+    const dataSource = await this.tenantConnection.getDataSource();
+    const cashRegisterRepo = dataSource.getRepository(CashRegister);
 
-  if (!caja) {
-    console.warn(`No se encontró caja con cash_register_code = ${cash_register_code}`);
-    return null;
+    const caja = await cashRegisterRepo.findOne({
+      where: { cash_register_code },
+    });
+
+    if (!caja) {
+      console.warn(`No se encontró caja con cash_register_code = ${cash_register_code}`);
+      return null;
+    }
+
+    caja.id_state = data.id_state;
+    caja.updated_at = new Date();
+
+    const updated = await cashRegisterRepo.save(caja);
+    console.log(`Caja ${cash_register_code} actualizada con estado ${data.id_state}`);
+    return updated;
   }
-
-  caja.id_state = data.id_state;
-  caja.updated_at = new Date();
-
-  const updated = await this.cashRegisterRepo.save(caja);
-  console.log(`Caja ${cash_register_code} actualizada con estado ${data.id_state}`);
-  return updated;
 }
 
-
-}

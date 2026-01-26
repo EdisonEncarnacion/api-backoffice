@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Currency } from './entities/currency.entity';
 
 @Injectable()
 export class CurrencyService {
-    constructor(
-        @InjectRepository(Currency)
-        private readonly currencyRepo: Repository<Currency>,
-    ) { }
+    constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
     async getCurrenciesForSync() {
-        const currencies = await this.currencyRepo.find();
+        const dataSource = await this.tenantConnection.getDataSource();
+        const currencyRepo = dataSource.getRepository(Currency);
+        const currencies = await currencyRepo.find();
 
-        return currencies.map(c => ({
+        return currencies.map((c) => ({
             id_currency: c.id_currency,
             currency_code: c.currency_code,
             currency_type: c.currency_type,
@@ -23,3 +21,4 @@ export class CurrencyService {
         }));
     }
 }
+

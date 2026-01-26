@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Hose } from './entities/hose.entity';
 
 @Injectable()
 export class HoseService {
-  constructor(
-    @InjectRepository(Hose)
-    private readonly repo: Repository<Hose>,
-  ) { }
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
+
   async getHosesForSync(since?: string) {
-    const query = this.repo
+    const dataSource = await this.tenantConnection.getDataSource();
+    const repo = dataSource.getRepository(Hose);
+
+    const query = repo
       .createQueryBuilder('h')
-      .leftJoin('side', 's', 's.id_side = h.side_id') // JOIN correcto
+      .leftJoin('side', 's', 's.id_side = h.side_id')
       .select([
         'h.id_hose',
         'h.hose_name',
@@ -25,7 +25,7 @@ export class HoseService {
         'h.updated_at',
         'h.state_audit',
         'h.id_local',
-        's.migration_sync_id',   // EL ID INT QUE VA A VENTAS
+        's.migration_sync_id',
       ]);
 
     if (since) {
@@ -36,20 +36,20 @@ export class HoseService {
 
     const rows = await query.getRawMany();
 
-    return rows.map(r => ({
+    return rows.map((r) => ({
       id_hose: r.h_id_hose,
       hose_name: r.h_hose_name,
       hose_position: r.h_hose_position,
       initial_cm: r.h_initial_cm,
       last_cm: r.h_last_cm,
-      product_id: r.h_product_id,     
-      tank_id: r.h_tank_id,           
-      id_side: r.s_migration_sync_id, 
+      product_id: r.h_product_id,
+      tank_id: r.h_tank_id,
+      id_side: r.s_migration_sync_id,
       created_at: r.h_created_at,
       updated_at: r.h_updated_at,
       state_audit: r.h_state_audit,
       id_local: r.h_id_local,
     }));
   }
-
 }
+

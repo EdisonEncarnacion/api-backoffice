@@ -1,30 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { AccountCard } from './entities/account-card.entity';
 
 @Injectable()
 export class AccountCardService {
-  constructor(
-    @InjectRepository(AccountCard)
-    private readonly accountCardRepository: Repository<AccountCard>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getAccountCardsForSync(since?: string) {
-    const query = this.accountCardRepository.createQueryBuilder('account_card');
+    const dataSource = await this.tenantConnection.getDataSource();
+    const accountCardRepository = dataSource.getRepository(AccountCard);
+
+    const query = accountCardRepository.createQueryBuilder('account_card');
 
     if (since) {
       // ⏱ Trae solo los registros modificados después de la última sincronización
       query.where('account_card.updated_at > :since', { since });
     } else {
       // ⏱ O los registros que nunca se sincronizaron
-      query.where('account_card.updated_sync_at IS NULL')
-           .orWhere('account_card.updated_at > account_card.updated_sync_at');
+      query
+        .where('account_card.updated_sync_at IS NULL')
+        .orWhere('account_card.updated_at > account_card.updated_sync_at');
     }
 
     const cards = await query.getMany();
 
-    return cards.map(c => ({
+    return cards.map((c) => ({
       id_account_card: c.id_account_card,
       card_number: c.card_number,
       balance: c.balance,
@@ -38,3 +38,4 @@ export class AccountCardService {
     }));
   }
 }
+

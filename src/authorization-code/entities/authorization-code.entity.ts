@@ -9,8 +9,8 @@ export class AuthorizationCode {
     @Column({ type: 'varchar', length: 10, name: 'code' })
     code: string;
 
-    @Column({ type: 'uuid', name: 'sede_id' })
-    sede_id: string;
+    @Column({ type: 'uuid', name: 'id_local' })
+    id_local: string;
 
     @Column({ type: 'timestamptz', name: 'expires_at' })
     expires_at: Date;

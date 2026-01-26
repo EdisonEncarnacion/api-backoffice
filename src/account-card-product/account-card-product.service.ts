@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { AccountCardProduct } from './entities/account-card-product.entity';
 
 @Injectable()
 export class AccountCardProductService {
-  constructor(
-    @InjectRepository(AccountCardProduct)
-    private readonly repo: Repository<AccountCardProduct>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getAccountCardProductsForSync(since?: string) {
-    const query = this.repo.createQueryBuilder('acp');
+    const dataSource = await this.tenantConnection.getDataSource();
+    const repo = dataSource.getRepository(AccountCardProduct);
+
+    const query = repo.createQueryBuilder('acp');
 
     if (since) {
       query.where('acp.updated_at > :since', { since });
@@ -23,7 +22,7 @@ export class AccountCardProductService {
 
     const rows = await query.getMany();
 
-    return rows.map(r => ({
+    return rows.map((r) => ({
       id_account_card_product: r.id_account_card_product,
       is_active: r.is_active,
       created_at: r.created_at,

@@ -1,14 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { GeneralType } from './entities/general-type.entity';
 
 @Injectable()
 export class GeneralTypeService {
-  constructor(
-    @InjectRepository(GeneralType)
-    private readonly repo: Repository<GeneralType>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   // Mapeo manual entre id_document_type de Ventas y general_type.id en Backoffice
   private documentTypeMap: Record<number, number> = {
@@ -71,13 +67,16 @@ export class GeneralTypeService {
     category?: string,
     fieldName = 'general_type_id',
   ): Promise<void> {
+    const dataSource = await this.tenantConnection.getDataSource();
+    const repo = dataSource.getRepository(GeneralType);
+
     const whereCondition: any = { id, state_audit: 'A' };
 
     if (category) {
       whereCondition.category = category;
     }
 
-    const exists = await this.repo.findOne({ where: whereCondition });
+    const exists = await repo.findOne({ where: whereCondition });
 
     if (!exists) {
       if (category) {

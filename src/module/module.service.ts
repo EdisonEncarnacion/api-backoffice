@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Module } from './entities/module.entity';
 
 @Injectable()
 export class ModuleService {
-    constructor(
-        @InjectRepository(Module)
-        private readonly moduleRepo: Repository<Module>,
-    ) { }
+    constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
     async getModulesForSync(since?: string) {
-        const query = this.moduleRepo.createQueryBuilder('module');
+        const dataSource = await this.tenantConnection.getDataSource();
+        const moduleRepo = dataSource.getRepository(Module);
+
+        const query = moduleRepo.createQueryBuilder('module');
 
         // Solo enviar módulos con system_id = 2 (ventas)
         // system_id = 1 pertenece a backoffice y no se sincroniza
@@ -23,7 +22,7 @@ export class ModuleService {
 
         const modules = await query.getMany();
 
-        return modules.map(m => ({
+        return modules.map((m) => ({
             id_module: m.id_module,
             name: m.name,
             system_id: m.system_id,
@@ -34,3 +33,4 @@ export class ModuleService {
         }));
     }
 }
+
