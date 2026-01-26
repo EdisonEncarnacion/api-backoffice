@@ -1,9 +1,13 @@
 // src/app.module.ts
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MigrationService } from './shared/migration.service';
 
+// Tenant Module
+import { TenantModule } from './tenant/tenant.module';
+import { TenantMiddleware } from './tenant/tenant.middleware';
+
+// Business Modules
 import { SalesModule } from './sales/sales.module';
 import { CashRegisterModule } from './cash-register/cash-register.module';
 import { DepositModule } from './deposit/deposit.module';
@@ -39,7 +43,6 @@ import { RoleModule } from './role/role.module';
 import { ModuleModule } from './module/module.module';
 import { RoleAccessModule } from './role-access/role-access.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -47,23 +50,10 @@ import { RoleAccessModule } from './role-access/role-access.module';
       isGlobal: true,
     }),
 
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('DATABASE_HOST'),
-        port: configService.get<number>('DATABASE_PORT'),
-        username: configService.get<string>('DATABASE_USER'),
-        password: configService.get<string>('DATABASE_PASSWORD'),
-        database: configService.get<string>('DATABASE_NAME'),
-        synchronize: false,
-        autoLoadEntities: true,
-        migrations: [__dirname + '/migrations/**/*.js'],
-        migrationsRun: false, // Usaremos MigrationService en su lugar
-      }),
-    }),
+    // Tenant Module (Master DB)
+    TenantModule,
 
+    // Business Modules
     SalesModule,
     CashRegisterModule,
     DepositModule,
@@ -75,9 +65,34 @@ import { RoleAccessModule } from './role-access/role-access.module';
     TransactionControllerModule,
     SerieModule,
     ProductModule,
-    ProductLocalModule, GroupSerieModule, DriverModule, VehicleModule, AccountTypeModule, AccountCardTypeModule, AccountModule, AccountProductModule, AccountCardModule, MovementTypeModule, UserModule, EmployeeModule, MovementModule, TankModule, AccountCardProductModule, HoseModule, BankModule, BankAccountModule, CurrencyModule, AuthorizationCodeModule, RoleModule, ModuleModule, RoleAccessModule,
-
+    ProductLocalModule,
+    GroupSerieModule,
+    DriverModule,
+    VehicleModule,
+    AccountTypeModule,
+    AccountCardTypeModule,
+    AccountModule,
+    AccountProductModule,
+    AccountCardModule,
+    MovementTypeModule,
+    UserModule,
+    EmployeeModule,
+    MovementModule,
+    TankModule,
+    AccountCardProductModule,
+    HoseModule,
+    BankModule,
+    BankAccountModule,
+    CurrencyModule,
+    AuthorizationCodeModule,
+    RoleModule,
+    ModuleModule,
+    RoleAccessModule,
   ],
-  providers: [MigrationService],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(TenantMiddleware).forRoutes('*');
+  }
+}
+
