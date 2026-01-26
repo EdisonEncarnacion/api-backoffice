@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Role } from './entities/role.entity';
 
 @Injectable()
 export class RoleService {
-    constructor(
-        @InjectRepository(Role)
-        private readonly roleRepo: Repository<Role>,
-    ) { }
+    constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
     async getRolesForSync(since?: string) {
-        const query = this.roleRepo.createQueryBuilder('role');
+        const dataSource = await this.tenantConnection.getDataSource();
+        const roleRepo = dataSource.getRepository(Role);
+
+        const query = roleRepo.createQueryBuilder('role');
 
         if (since) {
             query.where('role.updated_at > :since', { since });
@@ -19,7 +18,7 @@ export class RoleService {
 
         const roles = await query.getMany();
 
-        return roles.map(r => ({
+        return roles.map((r) => ({
             id_role: r.id_role,
             name: r.name,
             description: r.description,

@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { ProductLocal } from './entities/product-local.entity';
 
 @Injectable()
 export class ProductLocalService {
-  constructor(
-    @InjectRepository(ProductLocal)
-    private readonly productLocalRepository: Repository<ProductLocal>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getProductsForSync(since?: string) {
-    const query = this.productLocalRepository.createQueryBuilder('product_local');
+    const dataSource = await this.tenantConnection.getDataSource();
+    const productLocalRepository = dataSource.getRepository(ProductLocal);
+
+    const query = productLocalRepository.createQueryBuilder('product_local');
 
     if (since) {
       query.where('product_local.updated_at > :since', { since });
@@ -21,7 +20,7 @@ export class ProductLocalService {
 
     const products = await query.getMany();
 
-    return products.map(p => ({
+    return products.map((p) => ({
       product_local_id: p.product_local_id,
       product_id: p.product_id,
       id_local: p.id_local,
@@ -36,7 +35,10 @@ export class ProductLocalService {
 
   async saveOrUpdateProductLocal(dto: ProductLocal) {
     try {
-      let productLocal = await this.productLocalRepository.findOne({
+      const dataSource = await this.tenantConnection.getDataSource();
+      const productLocalRepository = dataSource.getRepository(ProductLocal);
+
+      let productLocal = await productLocalRepository.findOne({
         where: { product_id: dto.product_id, id_local: dto.id_local },
       });
 
@@ -44,18 +46,19 @@ export class ProductLocalService {
         Object.assign(productLocal, dto, {
           updated_at: new Date(),
         });
-        return await this.productLocalRepository.save(productLocal);
+        return await productLocalRepository.save(productLocal);
       }
 
-      const newProductLocal = this.productLocalRepository.create({
+      const newProductLocal = productLocalRepository.create({
         ...dto,
         created_at: new Date(),
         updated_at: new Date(),
       });
 
-      return await this.productLocalRepository.save(newProductLocal);
+      return await productLocalRepository.save(newProductLocal);
     } catch (err: any) {
       throw new Error(`Error guardando product_local: ${err.message}`);
     }
   }
 }
+

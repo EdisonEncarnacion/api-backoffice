@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Serie } from './entities/serie.entity';
 
 @Injectable()
 export class SerieService {
-  constructor(
-    @InjectRepository(Serie)
-    private readonly serieRepository: Repository<Serie>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getSeriesByLocal(local_id: string) {
-    const result = await this.serieRepository
+    const dataSource = await this.tenantConnection.getDataSource();
+    const serieRepository = dataSource.getRepository(Serie);
+
+    const result = await serieRepository
       .createQueryBuilder('s')
       .where('s.id_local = :local_id', { local_id })
       .andWhere("s.state_audit = 'A'")
@@ -34,3 +33,4 @@ export class SerieService {
     return result;
   }
 }
+

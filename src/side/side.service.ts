@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Side } from './entities/side.entity';
 
 @Injectable()
 export class SideService {
-  constructor(
-    @InjectRepository(Side)
-    private readonly sideRepository: Repository<Side>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getSidesByLocal(local_id: string) {
-    const result = await this.sideRepository
+    const dataSource = await this.tenantConnection.getDataSource();
+    const sideRepository = dataSource.getRepository(Side);
+
+    const result = await sideRepository
       .createQueryBuilder('s')
       .where('s.local_id = :local_id', { local_id })
       .andWhere("s.state_audit = 'A'")
@@ -29,3 +28,4 @@ export class SideService {
     return result;
   }
 }
+

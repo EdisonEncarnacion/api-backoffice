@@ -1,18 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Vehicle } from './entities/vehicle.entity';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 
 @Injectable()
 export class VehicleService {
-  constructor(
-    @InjectRepository(Vehicle)
-    private readonly vehicleRepository: Repository<Vehicle>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getVehiclesForSync(since?: string) {
-    const query = this.vehicleRepository.createQueryBuilder('vehicle');
+    const dataSource = await this.tenantConnection.getDataSource();
+    const vehicleRepository = dataSource.getRepository(Vehicle);
+
+    const query = vehicleRepository.createQueryBuilder('vehicle');
 
     if (since) {
       query.where('vehicle.updated_at > :since', { since });
@@ -24,7 +23,7 @@ export class VehicleService {
 
     const vehicles = await query.getMany();
 
-    return vehicles.map(v => ({
+    return vehicles.map((v) => ({
       id_vehicle: v.id_vehicle,
       vehicle_plate: v.vehicle_plate,
       vehicle_code: v.vehicle_code,
@@ -38,7 +37,10 @@ export class VehicleService {
 
   async saveOrUpdateVehicleFromSync(dto: CreateVehicleDto) {
     try {
-      const existing = await this.vehicleRepository.findOne({
+      const dataSource = await this.tenantConnection.getDataSource();
+      const vehicleRepository = dataSource.getRepository(Vehicle);
+
+      const existing = await vehicleRepository.findOne({
         where: { vehicle_plate: dto.vehicle_plate },
       });
 
@@ -49,11 +51,11 @@ export class VehicleService {
           updated_at: new Date(),
           updated_sync_at: new Date(),
         });
-        const updated = await this.vehicleRepository.save(existing);
+        const updated = await vehicleRepository.save(existing);
         return { ...updated, message: 'Vehículo actualizado correctamente' };
       }
 
-      const newVehicle = this.vehicleRepository.create({
+      const newVehicle = vehicleRepository.create({
         ...dto,
         created_at: new Date(),
         updated_at: new Date(),
@@ -61,12 +63,14 @@ export class VehicleService {
         state_audit: dto.state_audit ?? 'A',
       });
 
-      const saved = await this.vehicleRepository.save(newVehicle);
+      const saved = await vehicleRepository.save(newVehicle);
       return { ...saved, message: 'Vehículo creado correctamente' };
-
     } catch (err: any) {
       if (err.code === '23505' && err.detail?.includes('vehicle_plate')) {
-        const existing = await this.vehicleRepository.findOne({
+        const dataSource = await this.tenantConnection.getDataSource();
+        const vehicleRepository = dataSource.getRepository(Vehicle);
+
+        const existing = await vehicleRepository.findOne({
           where: { vehicle_plate: dto.vehicle_plate },
         });
         if (existing) {
@@ -76,7 +80,7 @@ export class VehicleService {
             updated_at: new Date(),
             updated_sync_at: new Date(),
           });
-          const updated = await this.vehicleRepository.save(existing);
+          const updated = await vehicleRepository.save(existing);
           return { ...updated, message: 'Vehículo ya existía, actualizado correctamente' };
         }
       }

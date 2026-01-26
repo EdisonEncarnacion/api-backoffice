@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 
+/**
+ * UuidMapperService - Mapea IDs de migración a UUIDs
+ * REFACTORIZADO para arquitectura multitenant
+ * Usa TenantConnectionProvider en lugar de DataSource global
+ */
 @Injectable()
 export class UuidMapperService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async mapIdToUuid(
     tableName: string,
-    migrationSyncId: number | null | undefined
+    migrationSyncId: number | null | undefined,
   ): Promise<string | null> {
     // 🧩 Permitir null en transacciones
     if (
@@ -19,7 +24,7 @@ export class UuidMapperService {
 
     if (migrationSyncId === null || migrationSyncId === undefined) {
       throw new Error(
-        `El campo migrationSyncId para la tabla '${tableName}' no puede ser NULL`
+        `El campo migrationSyncId para la tabla '${tableName}' no puede ser NULL`,
       );
     }
 
@@ -40,7 +45,6 @@ export class UuidMapperService {
         column: 'id_cash_register',
         whereColumn: 'cash_register_code',
       },
-      
       hose: { column: 'id_hose', whereColumn: 'migration_sync_id' },
     };
 
@@ -50,14 +54,17 @@ export class UuidMapperService {
       throw new Error(`No hay configuración de mapeo para la tabla '${tableName}'`);
     }
 
-    const result = await this.dataSource.query(
+    // Obtener DataSource del tenant actual
+    const dataSource = await this.tenantConnection.getDataSource();
+
+    const result = await dataSource.query(
       `SELECT ${mapping.column} FROM ${tableName} WHERE ${mapping.whereColumn} = $1 LIMIT 1`,
-      [migrationSyncId]
+      [migrationSyncId],
     );
 
     if (result.length === 0) {
       throw new Error(
-        `No se encontró UUID en la tabla '${tableName}' para ${mapping.whereColumn} = ${migrationSyncId}`
+        `No se encontró UUID en la tabla '${tableName}' para ${mapping.whereColumn} = ${migrationSyncId}`,
       );
     }
 

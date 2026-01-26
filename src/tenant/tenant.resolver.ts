@@ -8,6 +8,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TenantEntity } from './entities/tenant.entity';
 
+/**
+ * TenantResolver - Resuelve tenants desde la BD master usando el esquema REAL
+ * Busca en la tabla 'tenant' (singular) con columna 'isActive'
+ */
 @Injectable()
 export class TenantResolver {
     constructor(
@@ -24,8 +28,9 @@ export class TenantResolver {
             throw new UnauthorizedException(`Tenant '${subdomain}' not found`);
         }
 
-        if (tenant.status !== 'active') {
-            throw new ForbiddenException(`Tenant '${subdomain}' is ${tenant.status}`);
+        // Usar isActive en lugar de status
+        if (!tenant.isActive) {
+            throw new ForbiddenException(`Tenant '${subdomain}' is inactive`);
         }
 
         return tenant;

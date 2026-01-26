@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Sale } from './sale.entity';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { CreateSaleWithDetailsDto } from './dto/create-sale-with-details.dto';
@@ -12,18 +11,9 @@ import { randomUUID } from 'crypto';
 @Injectable()
 export class SalesService {
   constructor(
-    @InjectRepository(Sale)
-    private readonly salesRepository: Repository<Sale>,
-
-    @InjectRepository(SaleDetail)
-    private readonly saleDetailsRepository: Repository<SaleDetail>,
-
-    @InjectRepository(Payment)
-    private readonly paymentsRepository: Repository<Payment>,
-
-    private readonly dataSource: DataSource,
+    private readonly tenantConnection: TenantConnectionProvider,
     private readonly uuidMapper: UuidMapperService,
-  ) {}
+  ) { }
 
   async create(dto: CreateSaleDto) {
     try {
@@ -32,8 +22,11 @@ export class SalesService {
         dto.state = 1;
       }
 
-      const sale = this.salesRepository.create(dto);
-      return await this.salesRepository.save(sale);
+      const dataSource = await this.tenantConnection.getDataSource();
+      const salesRepository = dataSource.getRepository(Sale);
+
+      const sale = salesRepository.create(dto);
+      return await salesRepository.save(sale);
     } catch (error) {
       console.error('💥 Error al guardar venta:', error);
       throw error;
@@ -41,7 +34,8 @@ export class SalesService {
   }
 
   async createWithDetails(dto: CreateSaleWithDetailsDto) {
-    const queryRunner = this.dataSource.createQueryRunner();
+    const dataSource = await this.tenantConnection.getDataSource();
+    const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
@@ -127,7 +121,10 @@ export class SalesService {
     }
   }
 
-  findAll() {
-    return this.salesRepository.find();
+  async findAll() {
+    const dataSource = await this.tenantConnection.getDataSource();
+    const salesRepository = dataSource.getRepository(Sale);
+    return salesRepository.find();
   }
 }
+

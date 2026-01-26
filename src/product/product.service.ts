@@ -1,21 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, MoreThan, IsNull } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Product } from './entities/product.entity';
 import { ProductLocal } from './entities/product-local.entity';
 
 @Injectable()
 export class ProductService {
-  constructor(
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
-
-    @InjectRepository(ProductLocal)
-    private readonly productLocalRepository: Repository<ProductLocal>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getProductsForSync(since?: string) {
-    const query = this.productRepository.createQueryBuilder('p');
+    const dataSource = await this.tenantConnection.getDataSource();
+    const productRepository = dataSource.getRepository(Product);
+
+    const query = productRepository.createQueryBuilder('p');
     if (since) {
       query.where('p.updated_at > :since', { since });
     } else {
@@ -25,7 +21,11 @@ export class ProductService {
   }
 
   async getProductLocalForSync(local_id: string, since?: string) {
-    const query = this.productLocalRepository.createQueryBuilder('pl')
+    const dataSource = await this.tenantConnection.getDataSource();
+    const productLocalRepository = dataSource.getRepository(ProductLocal);
+
+    const query = productLocalRepository
+      .createQueryBuilder('pl')
       .innerJoinAndSelect('product', 'p', 'p.product_id = pl.product_id')
       .where('pl.id_local = :local_id', { local_id });
 
@@ -33,7 +33,7 @@ export class ProductService {
 
     const result = await query.getRawMany();
 
-    return result.map(r => ({
+    return result.map((r) => ({
       product_local_id: r.pl_product_local_id,
       product_id: r.p_product_id,
       description: r.p_description,
@@ -48,8 +48,11 @@ export class ProductService {
   }
 
   async saveProductLocalFromBranch(data: any[]) {
+    const dataSource = await this.tenantConnection.getDataSource();
+    const productLocalRepository = dataSource.getRepository(ProductLocal);
+
     for (const item of data) {
-      const existing = await this.productLocalRepository.findOne({
+      const existing = await productLocalRepository.findOne({
         where: { product_id: item.product_id, id_local: item.id_local },
       });
 
@@ -60,9 +63,9 @@ export class ProductService {
           manage_stock: item.manage_stock,
           updated_at: new Date(),
         });
-        await this.productLocalRepository.save(existing);
+        await productLocalRepository.save(existing);
       } else {
-        const newRecord = this.productLocalRepository.create({
+        const newRecord = productLocalRepository.create({
           product_id: item.product_id,
           id_local: item.id_local,
           stock: item.stock,
@@ -72,10 +75,11 @@ export class ProductService {
           updated_at: new Date(),
           state_audit: 'A',
         });
-        await this.productLocalRepository.save(newRecord);
+        await productLocalRepository.save(newRecord);
       }
     }
 
     return { message: `${data.length} productos locales sincronizados desde Ventas` };
   }
 }
+

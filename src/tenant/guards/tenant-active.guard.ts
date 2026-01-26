@@ -17,7 +17,7 @@ export class TenantActiveGuard implements CanActivate {
 
         const tenant = await this.tenantResolver.getTenantBySubdomain(subdomain);
 
-        if (tenant.status !== 'active') {
+        if (!tenant.isActive) {
             throw new ForbiddenException('Tenant is not active');
         }
 

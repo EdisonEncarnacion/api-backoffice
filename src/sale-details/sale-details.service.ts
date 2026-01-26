@@ -1,22 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { SaleDetail } from './sale-detail.entity';
 import { CreateSaleDetailDto } from './dto/create-sale-detail.dto';
 
 @Injectable()
 export class SaleDetailsService {
-    constructor(
-        @InjectRepository(SaleDetail)
-        private readonly saleDetailsRepository: Repository<SaleDetail>,
-    ) { }
+    constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
     async create(dto: CreateSaleDetailDto) {
-        const detail = this.saleDetailsRepository.create(dto);
-        return this.saleDetailsRepository.save(detail);
+        const dataSource = await this.tenantConnection.getDataSource();
+        const saleDetailsRepository = dataSource.getRepository(SaleDetail);
+        const detail = saleDetailsRepository.create(dto);
+        return saleDetailsRepository.save(detail);
     }
 
-    findAll() {
-        return this.saleDetailsRepository.find();
+    async findAll() {
+        const dataSource = await this.tenantConnection.getDataSource();
+        const saleDetailsRepository = dataSource.getRepository(SaleDetail);
+        return saleDetailsRepository.find();
     }
 }
+

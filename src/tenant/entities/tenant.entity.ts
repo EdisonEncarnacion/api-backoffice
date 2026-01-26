@@ -7,47 +7,57 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('tenants')
+/**
+ * TenantEntity - Mapea EXACTAMENTE la tabla 'tenant' (singular) de la BD master existente
+ * NO crear migraciones para esta tabla - ya existe en master
+ */
+@Entity('tenant') // Tabla singular, no 'tenants'
 export class TenantEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ unique: true, length: 100 })
+    @Column({ type: 'varchar' })
+    name: string;
+
+    @Column({ type: 'varchar', name: 'dbName' })
+    dbName: string;
+
+    @Column({ type: 'varchar', unique: true })
     subdomain: string;
 
-    @Column({ length: 255 })
-    company_name: string;
+    @Column({ type: 'varchar', nullable: true })
+    domain: string;
 
-    @Column({ length: 20, default: 'active' })
-    status: 'active' | 'inactive' | 'suspended';
+    @Column({ type: 'varchar', name: 'connectionUri' })
+    connectionUri: string;
 
-    @Column({ length: 255 })
-    db_host: string;
+    @Column({ type: 'boolean', name: 'isActive' })
+    isActive: boolean;
 
-    @Column({ type: 'int', default: 5432 })
-    db_port: number;
+    @Column({ type: 'varchar', length: 20, nullable: true })
+    plan: string;
 
-    @Column({ length: 100 })
-    db_name: string;
+    @Column({ type: 'timestamp', name: 'subscriptionStart', nullable: true })
+    subscriptionStart: Date;
 
-    @Column({ length: 100 })
-    db_user: string;
+    @Column({ type: 'timestamp', name: 'subscriptionEnd', nullable: true })
+    subscriptionEnd: Date;
 
-    @Column({ length: 255 })
-    db_password: string; // Encriptado en producción
+    @Column({ type: 'varchar', name: 'contactEmail', nullable: true })
+    contactEmail: string;
 
-    @CreateDateColumn()
+    @Column({ type: 'varchar', name: 'logoUrl', nullable: true })
+    logoUrl: string;
+
+    @Column({ type: 'jsonb', nullable: true })
+    settings: Record<string, any>;
+
+    @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
     created_at: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at' })
     updated_at: Date;
 
-    @Column({ nullable: true, length: 100 })
-    last_migration_version: string;
-
-    @Column({ type: 'int', default: 10 })
-    max_connections: number;
-
-    @Column({ length: 50, default: 'UTC' })
-    timezone: string;
+    @Column({ length: 1, name: 'state_audit', default: 'A' })
+    state_audit: string;
 }

@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { TenantConnectionProvider } from '../tenant/providers/tenant-connection.provider';
 import { Tank } from './entities/tank.entity';
 
 @Injectable()
 export class TankService {
-  constructor(
-    @InjectRepository(Tank)
-    private readonly tankRepository: Repository<Tank>,
-  ) {}
+  constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
   async getTanksForSync(since?: string, local_id?: string) {
     if (!local_id) return [];
 
-    const query = this.tankRepository
+    const dataSource = await this.tenantConnection.getDataSource();
+    const tankRepository = dataSource.getRepository(Tank);
+
+    const query = tankRepository
       .createQueryBuilder('t')
       .where('t.local_id = :local_id', { local_id });
 
@@ -58,3 +57,4 @@ export class TankService {
     }));
   }
 }
+
