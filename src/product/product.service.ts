@@ -14,8 +14,6 @@ export class ProductService {
     const query = productRepository.createQueryBuilder('p');
     if (since) {
       query.where('p.updated_at > :since', { since });
-    } else {
-      query.where('p.updated_sync_at IS NULL OR p.updated_at > p.updated_sync_at');
     }
     return await query.getMany();
   }

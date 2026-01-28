@@ -20,10 +20,6 @@ export class ClientService {
 
     if (since) {
       query.where('client.updated_at > :since', { since });
-    } else {
-      query
-        .where('client.updated_sync_at IS NULL')
-        .orWhere('client.updated_at > client.updated_sync_at');
     }
 
     const clients = await query.getMany();
@@ -42,7 +38,6 @@ export class ClientService {
       updated_at: client.updated_at,
       state: client.state,
       document_type_id: client.document_type_id,
-      updated_sync_at: client.updated_sync_at,
     }));
   }
 
@@ -64,7 +59,6 @@ export class ClientService {
           ...dto,
           id_client: client.id_client,
           updated_at: new Date(),
-          updated_sync_at: new Date(),
         });
 
         const updated = await clientRepository.save(client);
@@ -79,7 +73,6 @@ export class ClientService {
         state: dto.state ?? 1,
         created_at: new Date(),
         updated_at: new Date(),
-        updated_sync_at: new Date(),
       });
 
       const saved = await clientRepository.save(newClient);
@@ -101,7 +94,6 @@ export class ClientService {
             ...dto,
             id_client: existing.id_client,
             updated_at: new Date(),
-            updated_sync_at: new Date(),
           });
           const updated = await clientRepository.save(existing);
           return {
@@ -145,7 +137,7 @@ export class ClientService {
     const client = await clientRepository.findOne({ where: { document_number } });
     if (!client) return null;
 
-    Object.assign(client, dto, { updated_at: new Date(), updated_sync_at: new Date() });
+    Object.assign(client, dto, { updated_at: new Date() });
     return clientRepository.save(client);
   }
 }

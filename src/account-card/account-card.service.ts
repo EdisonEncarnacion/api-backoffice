@@ -13,13 +13,7 @@ export class AccountCardService {
     const query = accountCardRepository.createQueryBuilder('account_card');
 
     if (since) {
-      // ⏱ Trae solo los registros modificados después de la última sincronización
       query.where('account_card.updated_at > :since', { since });
-    } else {
-      // ⏱ O los registros que nunca se sincronizaron
-      query
-        .where('account_card.updated_sync_at IS NULL')
-        .orWhere('account_card.updated_at > account_card.updated_sync_at');
     }
 
     const cards = await query.getMany();

@@ -20,8 +20,6 @@ export class UserService {
 
     if (since) {
       query.andWhere('u.updated_at > :since', { since });
-    } else {
-      query.andWhere('(u.updated_sync_at IS NULL OR u.updated_at > u.updated_sync_at)');
     }
 
     const result = await query
@@ -33,7 +31,6 @@ export class UserService {
         'ul.local_id AS local_id',
         'u.created_at AS created_at',
         'u.updated_at AS updated_at',
-        'u.updated_sync_at AS updated_sync_at',
         'u.state_audit AS state_audit',
       ])
       .getRawMany();
@@ -46,7 +43,6 @@ export class UserService {
       id_local: r.local_id,
       created_at: r.created_at,
       updated_at: r.updated_at,
-      updated_sync_at: r.updated_sync_at,
       state_audit: r.state_audit,
     }));
   }

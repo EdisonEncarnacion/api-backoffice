@@ -18,8 +18,6 @@ export class TankService {
 
     if (since) {
       query.andWhere('t.updated_at > :since', { since });
-    } else {
-      query.andWhere('(t.updated_sync_at IS NULL OR t.updated_at > t.updated_sync_at)');
     }
 
     const result = await query
@@ -36,7 +34,6 @@ export class TankService {
         't.local_id AS local_id',
         't.created_at AS created_at',
         't.updated_at AS updated_at',
-        't.updated_sync_at AS updated_sync_at',
       ])
       .getRawMany();
 
@@ -53,7 +50,6 @@ export class TankService {
       id_local: r.local_id,
       created_at: r.created_at,
       updated_at: r.updated_at,
-      updated_sync_at: r.updated_sync_at,
     }));
   }
 }

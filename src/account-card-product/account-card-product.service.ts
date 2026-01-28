@@ -14,10 +14,6 @@ export class AccountCardProductService {
 
     if (since) {
       query.where('acp.updated_at > :since', { since });
-    } else {
-      query
-        .where('acp.updated_sync_at IS NULL')
-        .orWhere('acp.updated_at > acp.updated_sync_at');
     }
 
     const rows = await query.getMany();

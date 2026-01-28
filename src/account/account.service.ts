@@ -14,10 +14,6 @@ export class AccountService {
 
     if (since) {
       query.where('account.updated_at > :since', { since });
-    } else {
-      query
-        .where('account.updated_sync_at IS NULL')
-        .orWhere('account.updated_at > account.updated_sync_at');
     }
 
     const accounts = await query.getMany();

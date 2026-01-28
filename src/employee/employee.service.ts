@@ -20,8 +20,6 @@ export class EmployeeService {
 
     if (since) {
       query.andWhere('e.updated_at > :since', { since });
-    } else {
-      query.andWhere('(e.updated_sync_at IS NULL OR e.updated_at > e.updated_sync_at)');
     }
 
     const employees = await query.getMany();

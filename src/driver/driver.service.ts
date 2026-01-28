@@ -16,10 +16,6 @@ export class DriverService {
 
     if (since) {
       query.where('driver.updated_at > :since', { since });
-    } else {
-      query
-        .where('driver.updated_sync_at IS NULL')
-        .orWhere('driver.updated_at > driver.updated_sync_at');
     }
 
     const drivers = await query.getMany();
@@ -36,7 +32,6 @@ export class DriverService {
       state: d.state,
       created_at: d.created_at,
       updated_at: d.updated_at,
-      updated_sync_at: d.updated_sync_at,
     }));
   }
 
@@ -58,7 +53,6 @@ export class DriverService {
           ...dto,
           id_driver: existing.id_driver,
           updated_at: new Date(),
-          updated_sync_at: new Date(),
         });
         const updated = await driverRepository.save(existing);
         return { ...updated, message: 'Driver actualizado correctamente' };
@@ -69,7 +63,6 @@ export class DriverService {
         state: dto.state ?? 1,
         created_at: new Date(),
         updated_at: new Date(),
-        updated_sync_at: new Date(),
       });
       const saved = await driverRepository.save(newDriver);
       return { ...saved, message: 'Driver creado correctamente' };
@@ -86,7 +79,6 @@ export class DriverService {
             ...dto,
             id_driver: existing.id_driver,
             updated_at: new Date(),
-            updated_sync_at: new Date(),
           });
           const updated = await driverRepository.save(existing);
           return { ...updated, message: 'Driver ya existía, actualizado correctamente' };
@@ -111,7 +103,6 @@ export class DriverService {
 
     Object.assign(driver, dto, {
       updated_at: new Date(),
-      updated_sync_at: new Date(),
     });
     return driverRepository.save(driver);
   }

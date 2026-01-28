@@ -14,10 +14,6 @@ export class AccountCardTypeService {
 
     if (since) {
       query.where('account_card_type.updated_at > :since', { since });
-    } else {
-      query
-        .where('account_card_type.updated_sync_at IS NULL')
-        .orWhere('account_card_type.updated_at > account_card_type.updated_sync_at');
     }
 
     const accountCardTypes = await query.getMany();
