@@ -43,6 +43,7 @@ import { RoleModule } from './role/role.module';
 import { ModuleModule } from './module/module.module';
 import { RoleAccessModule } from './role-access/role-access.module';
 import { ReceiptConfigurationModule } from './receipt-configuration/receipt-configuration.module';
+import { WorkShiftModule } from './work-shift/work-shift.module';
 
 @Module({
   imports: [
@@ -90,6 +91,7 @@ import { ReceiptConfigurationModule } from './receipt-configuration/receipt-conf
     ModuleModule,
     RoleAccessModule,
     ReceiptConfigurationModule,
+    WorkShiftModule,
   ],
 })
 export class AppModule implements NestModule {
