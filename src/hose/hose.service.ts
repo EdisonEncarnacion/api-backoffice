@@ -10,6 +10,14 @@ export class HoseService {
     const dataSource = await this.tenantConnection.getDataSource();
     const repo = dataSource.getRepository(Hose);
 
+    // Get the tenant's local ID
+    const localResult = await dataSource.query('SELECT id_local FROM local LIMIT 1');
+    const tenantLocalId = localResult[0]?.id_local;
+
+    if (!tenantLocalId) {
+      return [];
+    }
+
     const query = repo
       .createQueryBuilder('h')
       .leftJoin('side', 's', 's.id_side = h.side_id')
@@ -26,12 +34,15 @@ export class HoseService {
         'h.state_audit',
         'h.id_local',
         's.migration_sync_id',
-      ]);
+      ])
+      .where('h.id_local = :tenantLocalId', { tenantLocalId });
 
     if (since) {
-      query.where('h.updated_at > :since', { since });
+      query.andWhere('h.updated_at > :since', { since });
     } else {
-      query.where('h.state_audit IS NULL').orWhere('h.updated_at > h.created_at');
+      query.andWhere(
+        '(h.state_audit IS NULL OR h.updated_at > h.created_at)'
+      );
     }
 
     const rows = await query.getRawMany();
