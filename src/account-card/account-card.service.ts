@@ -6,14 +6,16 @@ import { AccountCard } from './entities/account-card.entity';
 export class AccountCardService {
   constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
-  async getAccountCardsForSync(since?: string) {
+  async getAccountCardsForSync(since?: string, local_id?: string) {
     const dataSource = await this.tenantConnection.getDataSource();
     const accountCardRepository = dataSource.getRepository(AccountCard);
 
-    const query = accountCardRepository.createQueryBuilder('account_card');
+    const query = accountCardRepository.createQueryBuilder('account_card')
+      .innerJoin('account_card.account', 'account')
+      .where('account.local_id = :local_id', { local_id });
 
     if (since) {
-      query.where('account_card.updated_at > :since', { since });
+      query.andWhere('account_card.updated_at > :since', { since });
     }
 
     const cards = await query.getMany();

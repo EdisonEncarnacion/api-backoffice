@@ -1,9 +1,10 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Account } from '../../account/entities/account.entity';
 
 @Entity('account_card')
 export class AccountCard {
   @PrimaryColumn('uuid')
-  id_account_card: string; 
+  id_account_card: string;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
   card_number: string;
@@ -19,6 +20,10 @@ export class AccountCard {
 
   @Column({ type: 'uuid', nullable: true })
   account_id: string;
+
+  @ManyToOne(() => Account)
+  @JoinColumn({ name: 'account_id' })
+  account: Account;
 
   @Column({ type: 'int', nullable: true })
   status: number;

@@ -2,7 +2,7 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity('account')
 export class Account {
- @PrimaryColumn('uuid')
+  @PrimaryColumn('uuid')
   id_account: string;
 
   @Column({ type: 'numeric', precision: 18, scale: 6, nullable: true })
@@ -46,4 +46,7 @@ export class Account {
 
   @Column({ type: 'char', length: 1, nullable: true })
   state_audit?: string;
+
+  @Column({ type: 'int', nullable: true })
+  local_id?: number;
 }

@@ -6,14 +6,15 @@ import { Account } from './entities/account.entity';
 export class AccountService {
   constructor(private readonly tenantConnection: TenantConnectionProvider) { }
 
-  async getAccountsForSync(since?: string) {
+  async getAccountsForSync(since?: string, local_id?: string) {
     const dataSource = await this.tenantConnection.getDataSource();
     const accountRepository = dataSource.getRepository(Account);
 
-    const query = accountRepository.createQueryBuilder('account');
+    const query = accountRepository.createQueryBuilder('account')
+      .where('account.local_id = :local_id', { local_id });
 
     if (since) {
-      query.where('account.updated_at > :since', { since });
+      query.andWhere('account.updated_at > :since', { since });
     }
 
     const accounts = await query.getMany();
@@ -34,6 +35,7 @@ export class AccountService {
       created_at: a.created_at,
       updated_at: a.updated_at,
       state_audit: a.state_audit,
+      local_id: a.local_id,
     }));
   }
 }
