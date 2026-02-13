@@ -19,7 +19,9 @@ export const getMasterDbConfig = (
     entities: [TenantEntity],
     synchronize: false, // NUNCA sincronizar - usar esquema existente
     migrationsRun: false, // NO ejecutar migraciones automáticamente
-    logging: configService.get<string>('NODE_ENV') === 'development',
+    logging: ['error'],
+    logger: 'advanced-console',
+    maxQueryExecutionTime: 1000, // Log queries taking more than 1 second
     migrations: [], // Array vacío - NO hay migraciones para master
     migrationsTableName: 'typeorm_migrations',
 });

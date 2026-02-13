@@ -34,7 +34,9 @@ export class TenantConnectionManager implements OnModuleDestroy {
             entities: [__dirname + '/../**/*.entity{.ts,.js}'],
             synchronize: false,
             migrationsRun: false,
-            logging: process.env.NODE_ENV === 'development',
+            logging: ['error'],
+            logger: 'advanced-console',
+            maxQueryExecutionTime: 1000, // Log queries taking more than 1 second
             extra: {
                 max: 10, // Default pool size
                 idleTimeoutMillis: 30000,
