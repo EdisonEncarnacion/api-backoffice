@@ -1,3 +1,19 @@
+/**
+ * ⚠️ MIGRATION DESHABILITADA
+ * 
+ * Esta migración NO se ejecuta en arquitectura multitenant.
+ * Las migraciones de TypeORM se ejecutan en la base de datos master, no en las bases de datos de tenants.
+ * 
+ * En su lugar, usamos TenantDbInitializerService que:
+ * - Se ejecuta automáticamente al iniciar la API
+ * - Crea la función insert_movement_external en CADA tenant DB
+ * - Escala automáticamente cuando se crean nuevos tenants
+ * 
+ * Ubicación: src/tenant/services/tenant-db-initializer.service.ts
+ * 
+ * Este archivo se mantiene como referencia del SQL de la función.
+ */
+
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateInsertMovementExternalFunction1736975000000 implements MigrationInterface {

@@ -6,6 +6,7 @@ import { TenantEntity } from './entities/tenant.entity';
 import { TenantResolver } from './tenant.resolver';
 import { TenantConnectionManager } from './tenant-connection.manager';
 import { TenantConnectionProvider } from './providers/tenant-connection.provider';
+import { TenantDbInitializerService } from './services/tenant-db-initializer.service';
 import { getMasterDbConfig } from '../config/database.config';
 
 @Global()
@@ -19,7 +20,12 @@ import { getMasterDbConfig } from '../config/database.config';
         }),
         TypeOrmModule.forFeature([TenantEntity], 'master'),
     ],
-    providers: [TenantResolver, TenantConnectionManager, TenantConnectionProvider],
+    providers: [
+        TenantResolver,
+        TenantConnectionManager,
+        TenantConnectionProvider,
+        TenantDbInitializerService,
+    ],
     exports: [TenantResolver, TenantConnectionManager, TenantConnectionProvider],
 })
 export class TenantModule { }
