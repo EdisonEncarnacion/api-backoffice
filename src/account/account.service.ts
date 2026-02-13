@@ -10,9 +10,20 @@ export class AccountService {
     const dataSource = await this.tenantConnection.getDataSource();
     const accountRepository = dataSource.getRepository(Account);
 
-    const query = accountRepository.createQueryBuilder('account')
-      .where('account.local_id = :local_id', { local_id });
+    const query = accountRepository.createQueryBuilder('account');
 
+    // Multi-tenant logic:
+    // - Global accounts: local_id IS NULL (synchronized to all tenants)
+    // - Tenant-specific accounts: local_id = specific value (synchronized only to that tenant)
+    if (local_id) {
+      // If local_id is provided, return both:
+      // 1. Accounts specific to this tenant (account.local_id = :local_id)
+      // 2. Global accounts available to all tenants (account.local_id IS NULL)
+      query.where('(account.local_id = :local_id OR account.local_id IS NULL)', { local_id });
+    }
+    // If local_id is NOT provided, return all accounts (no local filter)
+
+    // Apply the 'since' filter for incremental sync
     if (since) {
       query.andWhere('account.updated_at > :since', { since });
     }

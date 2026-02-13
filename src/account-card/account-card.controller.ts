@@ -10,10 +10,9 @@ export class AccountCardController {
     @Query('since') since?: string,
     @Query('local_id') local_id?: string,
   ) {
-    if (!local_id) {
-      throw new BadRequestException('local_id es requerido');
-    }
-
+    // local_id is optional:
+    // - If provided: returns cards from tenant-specific accounts + global accounts (account.local_id NULL)
+    // - If not provided: returns all cards (no local filter)
     return this.accountCardService.getAccountCardsForSync(since, local_id);
   }
 }

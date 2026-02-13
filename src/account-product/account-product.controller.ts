@@ -3,7 +3,7 @@ import { AccountProductService } from './account-product.service';
 
 @Controller('sync')
 export class AccountProductController {
-  constructor(private readonly accountProductService: AccountProductService) {}
+  constructor(private readonly accountProductService: AccountProductService) { }
 
   @Get('account-product')
   async getAccountProducts(@Query('since') since?: string) {
