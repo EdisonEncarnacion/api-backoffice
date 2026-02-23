@@ -19,6 +19,7 @@ export class SideService {
         's.name AS name',
         's.product_id AS product_id',
         's.state AS state',
+        's.migration_sync_id AS migration_sync_id',
         's.created_at AS created_at',
         's.updated_at AS updated_at',
       ])
