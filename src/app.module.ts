@@ -11,6 +11,7 @@ import { TenantMiddleware } from './tenant/tenant.middleware';
 import { SalesModule } from './sales/sales.module';
 import { CashRegisterModule } from './cash-register/cash-register.module';
 import { DepositModule } from './deposit/deposit.module';
+import { DepositTypeModule } from './deposit-type/deposit-type.module';
 import { SideModule } from './side/side.module';
 import { ClientModule } from './client/client.module';
 import { FlowMeterModule } from './flow-meter/flow-meter.module';
@@ -59,6 +60,7 @@ import { WorkShiftModule } from './work-shift/work-shift.module';
     SalesModule,
     CashRegisterModule,
     DepositModule,
+    DepositTypeModule,
     SideModule,
     ClientModule,
     FlowMeterModule,
