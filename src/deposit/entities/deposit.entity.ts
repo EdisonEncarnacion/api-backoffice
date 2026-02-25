@@ -4,7 +4,7 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 @Entity('deposit')
 export class Deposit {
   @PrimaryColumn()
-   id_deposit: number; 
+  id_deposit: number;
 
   @Column({ type: 'timestamp' })
   date_process: Date;
@@ -33,6 +33,14 @@ export class Deposit {
   @Column()
   code_deposit_type: string;
 
-  @Column('uuid', { nullable: true }) 
+  @Column('uuid', { nullable: true })
   id_local: string;
+  @Column({ type: 'int', nullable: true })
+  payment_method_id: number;
+
+  @Column({ type: 'int', nullable: true })
+  id_sale_document_type: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  document_number: string;
 }

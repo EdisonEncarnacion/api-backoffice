@@ -15,7 +15,7 @@ export class CashRegisterService {
     const userUUID = dto.id_user;
 
     const existing = await cashRegisterRepo.findOne({
-      where: { cash_register_code: dto.id_cash_register },
+      where: { cash_register_code: dto.id_cash_register, id_local: dto.id_local },
     });
 
     if (existing) {
@@ -65,16 +65,16 @@ export class CashRegisterService {
     return await cashRegisterRepo.save(caja);
   }
 
-  async updateByCode(cash_register_code: number, data: { id_state: number }) {
+  async updateByCode(cash_register_code: number, id_local: string, data: { id_state: number }) {
     const dataSource = await this.tenantConnection.getDataSource();
     const cashRegisterRepo = dataSource.getRepository(CashRegister);
 
     const caja = await cashRegisterRepo.findOne({
-      where: { cash_register_code },
+      where: { cash_register_code, id_local },
     });
 
     if (!caja) {
-      console.warn(`No se encontró caja con cash_register_code = ${cash_register_code}`);
+      console.warn(`No se encontró caja con code=${cash_register_code} y local=${id_local}`);
       return null;
     }
 
@@ -82,7 +82,7 @@ export class CashRegisterService {
     caja.updated_at = new Date();
 
     const updated = await cashRegisterRepo.save(caja);
-    console.log(`Caja ${cash_register_code} actualizada con estado ${data.id_state}`);
+    console.log(`Caja ${cash_register_code} (local ${id_local}) actualizada con estado ${data.id_state}`);
     return updated;
   }
 }

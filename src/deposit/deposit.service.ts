@@ -65,6 +65,10 @@ export class DepositService {
       existingDeposit.updated_at = new Date();
       existingDeposit.date_process = new Date(depositDto.date_process);
 
+      if (depositDto.payment_method_id !== undefined) existingDeposit.payment_method_id = depositDto.payment_method_id;
+      if (depositDto.id_sale_document_type !== undefined) existingDeposit.id_sale_document_type = depositDto.id_sale_document_type;
+      if (depositDto.document_number !== undefined) existingDeposit.document_number = depositDto.document_number;
+
       return await depositRepo.save(existingDeposit);
     }
 

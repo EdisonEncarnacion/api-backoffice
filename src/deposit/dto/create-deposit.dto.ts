@@ -1,10 +1,10 @@
 // src/deposit/dto/create-deposit.dto.ts
-import { IsNumber, IsString, IsDateString } from 'class-validator';
+import { IsNumber, IsString, IsDateString, IsOptional } from 'class-validator';
 
 export class CreateDepositDto {
     @IsNumber()
     id_deposit: number;
-    
+
     @IsDateString()
     date_process: string;
 
@@ -21,7 +21,7 @@ export class CreateDepositDto {
     id_currency: number;
 
     //@IsString()
-   // state: string;
+    // state: string;
 
     @IsDateString()
     created_at: string;
@@ -31,4 +31,16 @@ export class CreateDepositDto {
 
     @IsString()
     code_deposit_type: string;
+
+    @IsNumber()
+    @IsOptional()
+    payment_method_id?: number;
+
+    @IsNumber()
+    @IsOptional()
+    id_sale_document_type?: number;
+
+    @IsString()
+    @IsOptional()
+    document_number?: string;
 }
