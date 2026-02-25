@@ -45,7 +45,7 @@ import { ModuleModule } from './module/module.module';
 import { RoleAccessModule } from './role-access/role-access.module';
 import { ReceiptConfigurationModule } from './receipt-configuration/receipt-configuration.module';
 import { WorkShiftModule } from './work-shift/work-shift.module';
-
+import { PaymentMethodModule } from './payment-method/payment-method.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -94,6 +94,7 @@ import { WorkShiftModule } from './work-shift/work-shift.module';
     RoleAccessModule,
     ReceiptConfigurationModule,
     WorkShiftModule,
+    PaymentMethodModule,
   ],
 })
 export class AppModule implements NestModule {
