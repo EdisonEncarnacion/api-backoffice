@@ -46,6 +46,10 @@ import { RoleAccessModule } from './role-access/role-access.module';
 import { ReceiptConfigurationModule } from './receipt-configuration/receipt-configuration.module';
 import { WorkShiftModule } from './work-shift/work-shift.module';
 import { PaymentMethodModule } from './payment-method/payment-method.module';
+import { PaymentMethodTypeModule } from './payment-method-type/payment-method-type.module';
+import { ReportModule } from './report/report.module';
+import { SectionModule } from './section/section.module';
+import { ReportSectionModule } from './report-section/report-section.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -95,6 +99,10 @@ import { PaymentMethodModule } from './payment-method/payment-method.module';
     ReceiptConfigurationModule,
     WorkShiftModule,
     PaymentMethodModule,
+    PaymentMethodTypeModule,
+    ReportModule,
+    SectionModule,
+    ReportSectionModule,
   ],
 })
 export class AppModule implements NestModule {
