@@ -1,9 +1,10 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Role } from '../../role/entities/role.entity';
 
 @Entity('user_auth')
 export class User {
   @PrimaryColumn('uuid')
-  id_user: string; 
+  id_user: string;
 
   @Column({ type: 'varchar', length: 100 })
   username: string;
@@ -16,6 +17,13 @@ export class User {
 
   @Column({ type: 'uuid', nullable: true })
   tenant_id: string;
+
+  @Column({ name: 'role_id', type: 'uuid', nullable: true })
+  role_id: string;
+
+  @ManyToOne(() => Role, { nullable: true, eager: false })
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
 
   @Column({ type: 'uuid', nullable: true })
   migration_sync_id: string;
