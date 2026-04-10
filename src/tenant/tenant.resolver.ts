@@ -20,9 +20,19 @@ export class TenantResolver {
     ) { }
 
     async getTenantBySubdomain(subdomain: string): Promise<TenantEntity> {
-        const tenant = await this.tenantRepository.findOne({
+        let tenant = await this.tenantRepository.findOne({
             where: { subdomain },
         });
+
+        // Fallback seguro si no se encuentra el tenant (ej. dominio fijo sync.sportschool.pe)
+        if (!tenant) {
+            const fallback = process.env.DEV_TENANT_SUBDOMAIN || 'dev';
+            if (subdomain !== fallback) {
+                tenant = await this.tenantRepository.findOne({
+                    where: { subdomain: fallback },
+                });
+            }
+        }
 
         if (!tenant) {
             throw new UnauthorizedException(`Tenant '${subdomain}' not found`);
