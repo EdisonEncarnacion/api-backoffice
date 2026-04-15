@@ -50,6 +50,10 @@ import { PaymentMethodTypeModule } from './payment-method-type/payment-method-ty
 import { ReportModule } from './report/report.module';
 import { SectionModule } from './section/section.module';
 import { ReportSectionModule } from './report-section/report-section.module';
+import { LocalPointsModule } from './local_points/local_points.module';
+import { LocalPointsConfigModule } from './local_points_config/local_points_config.module';
+import { LocalPointsRulesModule } from './local_points_rules/local_points_rules.module';
+import { LocalPointsMovementModule } from './local_points_movement/local_points_movement.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -103,6 +107,10 @@ import { ReportSectionModule } from './report-section/report-section.module';
     ReportModule,
     SectionModule,
     ReportSectionModule,
+    LocalPointsModule,
+    LocalPointsConfigModule,
+    LocalPointsRulesModule,
+    LocalPointsMovementModule,
   ],
 })
 export class AppModule implements NestModule {
