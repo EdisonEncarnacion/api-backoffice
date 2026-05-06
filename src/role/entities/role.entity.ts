@@ -2,8 +2,8 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity('role')
 export class Role {
-    @PrimaryColumn('uuid')
-    id_role: string;
+    @PrimaryColumn('int4')
+    id_role: number;
 
     @Column({ type: 'varchar', nullable: false })
     name: string;

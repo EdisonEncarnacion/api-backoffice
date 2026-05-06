@@ -12,7 +12,7 @@ export class RoleAccessService {
 
         const query = roleAccessRepo
             .createQueryBuilder('role_access')
-            .innerJoin('module', 'module', 'module.id_module = role_access.moduleId')
+            .innerJoin('module', 'module', 'module.id_module = role_access.module_id')
             .where('module.system_id = :systemId', { systemId: 2 });
 
         if (since) {
@@ -26,9 +26,9 @@ export class RoleAccessService {
             created_at: ra.created_at,
             updated_at: ra.updated_at,
             state_audit: ra.state_audit,
-            roleId: ra.roleId,
-            moduleId: ra.moduleId,
-            permissionId: ra.permissionId,
+            role_id: ra.role_id,
+            module_id: ra.module_id,
+            permissions: ra.permissions,
         }));
     }
 }

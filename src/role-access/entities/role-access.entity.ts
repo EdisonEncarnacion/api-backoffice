@@ -14,12 +14,12 @@ export class RoleAccess {
     @Column({ type: 'char', length: 1 })
     state_audit: string;
 
-    @Column({ type: 'uuid', nullable: true, name: 'roleId' })
-    roleId: string;
+    @Column({ type: 'int4', nullable: true, name: 'role_id' })
+    role_id: number;
 
-    @Column({ type: 'uuid', nullable: true, name: 'moduleId' })
-    moduleId: string;
+    @Column({ type: 'int4', nullable: true, name: 'module_id' })
+    module_id: number;
 
-    @Column({ type: 'int4', nullable: true, name: 'permissionId' })
-    permissionId: number;
+    @Column({ type: 'int2', nullable: true, name: 'permissions' })
+    permissions: number;
 }
