@@ -20,7 +20,7 @@ export class LocalPointsRulesService {
 
         return rules.map((r) => ({
             id_rule: r.id_rule,
-            account_type_id: r.account_type_id,
+            client_id: r.client_id,
             name: r.name,
             description: r.description,
             is_active: r.is_active,

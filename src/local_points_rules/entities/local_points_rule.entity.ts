@@ -5,8 +5,8 @@ export class LocalPointsRule {
     @PrimaryColumn('uuid')
     id_rule: string;
 
-    @Column('int', { nullable: true })
-    account_type_id: number;
+    @Column('uuid')
+    client_id: string;
 
     @Column('varchar', { length: 255, nullable: true })
     name: string;
@@ -17,7 +17,7 @@ export class LocalPointsRule {
     @Column('bool', { default: true })
     is_active: boolean;
 
-    @Column('int', { nullable: true })
+    @Column('int4', { nullable: true })
     product_id: number;
 
     @Column('enum', { enumName: 'rule_condition_enum', nullable: true })
