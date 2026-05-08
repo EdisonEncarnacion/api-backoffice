@@ -8,8 +8,6 @@ export class Module {
     @Column({ type: 'varchar', nullable: false })
     name: string;
 
-    @Column({ type: 'int4', nullable: false })
-    system_id: number;
 
     @Column({ type: 'varchar', nullable: true })
     description: string;

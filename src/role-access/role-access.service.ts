@@ -12,11 +12,10 @@ export class RoleAccessService {
 
         const query = roleAccessRepo
             .createQueryBuilder('role_access')
-            .innerJoin('module', 'module', 'module.id_module = role_access.module_id')
-            .where('module.system_id = :systemId', { systemId: 2 });
+            .innerJoin('module', 'module', 'module.id_module = role_access.module_id');
 
         if (since) {
-            query.andWhere('role_access.updated_at > :since', { since });
+            query.where('role_access.updated_at > :since', { since });
         }
 
         const roleAccess = await query.getMany();

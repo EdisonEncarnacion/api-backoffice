@@ -12,12 +12,9 @@ export class ModuleService {
 
         const query = moduleRepo.createQueryBuilder('module');
 
-        // Solo enviar módulos con system_id = 2 (ventas)
-        // system_id = 1 pertenece a backoffice y no se sincroniza
-        query.where('module.system_id = :systemId', { systemId: 2 });
 
         if (since) {
-            query.andWhere('module.updated_at > :since', { since });
+            query.where('module.updated_at > :since', { since });
         }
 
         const modules = await query.getMany();
@@ -25,7 +22,6 @@ export class ModuleService {
         return modules.map((m) => ({
             id_module: m.id_module,
             name: m.name,
-            system_id: m.system_id,
             description: m.description,
             created_at: m.created_at,
             updated_at: m.updated_at,

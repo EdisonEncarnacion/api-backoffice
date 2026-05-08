@@ -21,7 +21,13 @@ echo "Ejecutando en servidor..."
 ssh $SERVER << EOF
 cd $REMOTE_PATH
 
-echo "Cargando imagen..."
+echo "Deteniendo contenedor anterior..."
+docker compose down || true
+
+echo "Eliminando imagen anterior..."
+docker rmi $IMAGE_NAME:latest || true
+
+echo "Cargando nueva imagen..."
 docker load -i $IMAGE_NAME.tar
 
 echo "Creando docker-compose..."
@@ -53,17 +59,20 @@ networks:
     external: true
 EOL
 
-echo "Deteniendo anterior..."
-docker compose down || true
-
 echo "Levantando API..."
 docker compose up -d
+
+echo "Limpiando imágenes dangling..."
+docker image prune -af || true
+
+echo "Limpiando cache builder..."
+docker builder prune -af || true
 
 echo "Limpiando TAR..."
 rm -f $IMAGE_NAME.tar
 EOF
 
-echo "Limpiando local..."
+echo "Limpiando TAR local..."
 rm -f $IMAGE_NAME.tar
 
 echo "DEPLOY COMPLETADO"
