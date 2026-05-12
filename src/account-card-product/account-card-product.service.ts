@@ -10,7 +10,12 @@ export class AccountCardProductService {
     const dataSource = await this.tenantConnection.getDataSource();
     const repo = dataSource.getRepository(AccountCardProduct);
 
-    const query = repo.createQueryBuilder('acp');
+    const query = repo.createQueryBuilder('acp')
+      .innerJoin(
+        'product_local',
+        'pl',
+        'pl.product_id = acp.id_product',
+      );
 
     if (since) {
       query.where('acp.updated_at > :since', { since });
