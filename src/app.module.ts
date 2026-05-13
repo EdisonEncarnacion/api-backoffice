@@ -55,6 +55,8 @@ import { LocalPointsConfigModule } from './local_points_config/local_points_conf
 import { LocalPointsRulesModule } from './local_points_rules/local_points_rules.module';
 import { LocalPointsMovementModule } from './local_points_movement/local_points_movement.module';
 import { LocalModule } from './local/local.module';
+import { AddressModule } from './address/address.module';
+import { PersonAddressModule } from './person-address/person-address.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -113,6 +115,8 @@ import { LocalModule } from './local/local.module';
     LocalPointsRulesModule,
     LocalPointsMovementModule,
     LocalModule,
+    AddressModule,
+    PersonAddressModule,
   ],
 })
 export class AppModule implements NestModule {
