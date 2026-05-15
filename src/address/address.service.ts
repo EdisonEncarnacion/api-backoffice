@@ -22,8 +22,8 @@ export class AddressService {
 
     return addresses.map((a) => ({
       id_address: a.id_address,
-      address_line1: a.address_line1,
-      address_line2: a.address_line2,
+      address_line_1: a.address_line_1,
+      address_line_2: a.address_line_2,
       reference: a.reference,
       city: a.city,
       state_province: a.state_province,

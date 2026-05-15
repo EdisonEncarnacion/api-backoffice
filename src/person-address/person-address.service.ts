@@ -25,7 +25,6 @@ export class PersonAddressService {
       person_type: pa.person_type,
       person_id: pa.person_id,
       address_id: pa.address_id,
-      address_type_id: pa.address_type_id,
       is_primary: pa.is_primary,
       valid_from: pa.valid_from,
       valid_to: pa.valid_to,

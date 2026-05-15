@@ -7,10 +7,10 @@ export class Address {
   id_address: string;
 
   @Column({ nullable: true })
-  address_line1: string;
+  address_line_1: string;
 
   @Column({ nullable: true })
-  address_line2: string;
+  address_line_2: string;
 
   @Column({ nullable: true })
   reference: string;

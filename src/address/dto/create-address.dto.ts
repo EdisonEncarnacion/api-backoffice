@@ -1,8 +1,8 @@
 // create-address.dto.ts
 export class CreateAddressDto {
   id_address: string;
-  address_line1?: string;
-  address_line2?: string;
+  address_line_1?: string;
+  address_line_2?: string;
   reference?: string;
   city?: string;
   state_province?: string;
