@@ -3,22 +3,26 @@
 IMAGE_NAME=api-backoffice
 SERVER=back
 REMOTE_PATH=/home/ubuntu/infra/api-backoffice
+SSH_OPTS="-o ControlMaster=auto -o ControlPersist=10m -o ControlPath=~/.ssh/cm-%r@%h:%p"
 
-echo "Build..."
+echo "Compilando NestJS..."
+npm run build
+
+echo "Build Docker..."
 docker build -t $IMAGE_NAME .
 
 echo "Crear TAR..."
 docker save -o $IMAGE_NAME.tar $IMAGE_NAME
 
 echo "Crear carpeta en servidor..."
-ssh $SERVER "mkdir -p $REMOTE_PATH"
+ssh $SSH_OPTS $SERVER "mkdir -p $REMOTE_PATH"
 
 echo "Subir al servidor..."
-scp $IMAGE_NAME.tar $SERVER:$REMOTE_PATH/
+scp $SSH_OPTS $IMAGE_NAME.tar $SERVER:$REMOTE_PATH/
 
 echo "Ejecutando en servidor..."
 
-ssh $SERVER << EOF
+ssh $SSH_OPTS $SERVER << EOF
 cd $REMOTE_PATH
 
 echo "Deteniendo contenedor anterior..."
