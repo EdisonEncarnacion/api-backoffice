@@ -89,7 +89,7 @@ export class SalesService {
         sale_details.map(async (detail) => {
           const newDetail: Partial<SaleDetail> = {
             ...detail,
-            id_sale_detail: detail.id_sale_detail, // UUID original de BD ventas
+            id_sale_detail: randomUUID(),
             id_sale: savedSale.id_sale,
 
             // ✅ transaction_controller ya es UUID
@@ -112,7 +112,7 @@ export class SalesService {
       const paymentEntities = payments.map((payment) =>
         queryRunner.manager.create(Payment, {
           ...payment,
-          id_payment: payment.id_payment, // UUID original de BD ventas
+          id_payment: randomUUID(),
           id_sale: savedSale.id_sale,
         }),
       );

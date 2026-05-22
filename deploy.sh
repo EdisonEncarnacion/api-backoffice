@@ -1,8 +1,9 @@
 #!/bin/bash
 
 IMAGE_NAME=api-backoffice
-SERVER=back
-REMOTE_PATH=/home/ubuntu/infra/api-backoffice
+SERVER=backoffice
+REMOTE_PATH=/home/backoffice/infra/api-backoffice
+
 SSH_OPTS="-o ControlMaster=auto -o ControlPersist=10m -o ControlPath=~/.ssh/cm-%r@%h:%p"
 
 echo "Compilando NestJS..."
@@ -34,45 +35,9 @@ docker rmi $IMAGE_NAME:latest || true
 echo "Cargando nueva imagen..."
 docker load -i $IMAGE_NAME.tar
 
-echo "Creando docker-compose..."
-cat > docker-compose.yml << 'EOL'
-services:
-  api-backoffice:
-    image: api-backoffice
-    container_name: api-backoffice
-    env_file:
-      - .env.production
-    environment:
-      - PORT=3017
-    networks:
-      - backoffice-net
-      - traefik
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik"
-      - "traefik.http.routers.backoffice-sync.rule=Host(\`sync.sportschool.pe\`)"
-      - "traefik.http.routers.backoffice-sync.entrypoints=websecure"
-      - "traefik.http.routers.backoffice-sync.tls.certresolver=cloudflare"
-      - "traefik.http.services.backoffice-sync.loadbalancer.server.port=3017"
-
-networks:
-  backoffice-net:
-    external: true
-  traefik:
-    external: true
-EOL
-
 echo "Levantando API..."
 docker compose up -d
 
-echo "Limpiando imágenes dangling..."
-docker image prune -af || true
-
-echo "Limpiando cache builder..."
-docker builder prune -af || true
-
-echo "Limpiando TAR..."
 rm -f $IMAGE_NAME.tar
 EOF
 
