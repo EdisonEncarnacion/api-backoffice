@@ -71,16 +71,25 @@ export class SalesService {
 
       sale.updated_at = sale.updated_at ?? sale.created_at ?? new Date();
 
-      // 🔹 Guardar venta principal
+      // 🔹 Guardar venta principal (upsert mediante save con PK existente)
       const createdSale = queryRunner.manager.create(Sale, sale);
       const savedSale = await queryRunner.manager.save(Sale, createdSale);
 
-      // 🔹 Guardar detalles (transaction UUID directo, side mapeado)
+      // 🗑 Eliminar detalles anteriores para evitar duplicados en re-sincronización
+      console.log(`🗑 Eliminando detalles anteriores de la venta ${savedSale.id_sale}...`);
+      await queryRunner.manager.delete(SaleDetail, { id_sale: savedSale.id_sale });
+
+      // 🗑 Eliminar pagos anteriores para evitar duplicados en re-sincronización
+      console.log(`🗑 Eliminando pagos anteriores de la venta ${savedSale.id_sale}...`);
+      await queryRunner.manager.delete(Payment, { id_sale: savedSale.id_sale });
+
+      // ✅ Reinsertar detalles actualizados (usando UUID original de la BD ventas)
+      console.log(`✅ Reinsertando detalles actualizados (${sale_details.length} registros)...`);
       const details = await Promise.all(
         sale_details.map(async (detail) => {
           const newDetail: Partial<SaleDetail> = {
             ...detail,
-            id_sale_detail: randomUUID(),
+            id_sale_detail: detail.id_sale_detail, // UUID original de BD ventas
             id_sale: savedSale.id_sale,
 
             // ✅ transaction_controller ya es UUID
@@ -98,11 +107,12 @@ export class SalesService {
 
       await queryRunner.manager.save(SaleDetail, details);
 
-      // 🔹 Guardar pagos
+      // ✅ Reinsertar pagos actualizados (usando UUID original de la BD ventas)
+      console.log(`✅ Reinsertando pagos actualizados (${payments.length} registros)...`);
       const paymentEntities = payments.map((payment) =>
         queryRunner.manager.create(Payment, {
           ...payment,
-          id_payment: randomUUID(),
+          id_payment: payment.id_payment, // UUID original de BD ventas
           id_sale: savedSale.id_sale,
         }),
       );
@@ -127,4 +137,3 @@ export class SalesService {
     return salesRepository.find();
   }
 }
-

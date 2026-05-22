@@ -1,4 +1,5 @@
 export class CreateSaleDetailDto {
+    id_sale_detail: string;
     quantity: number;
     product_price: number;
     tax_detail: { type: string; amount: number };
