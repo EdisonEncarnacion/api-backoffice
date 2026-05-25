@@ -21,6 +21,7 @@ export class SerieService {
       .createQueryBuilder('s')
       .where('s.id_local = :local_id', { local_id })
       .andWhere("s.state_audit = 'A'")
+      .andWhere('s.id_group_serie IS NOT NULL')
       .select([
         's.id_serie AS id_serie',
         's.correlative_start AS correlative_start',
