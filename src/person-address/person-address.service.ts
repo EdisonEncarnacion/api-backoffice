@@ -12,10 +12,15 @@ export class PersonAddressService {
     const dataSource = await this.tenantConnection.getDataSource();
     const repo = dataSource.getRepository(PersonAddress);
 
-    const query = repo.createQueryBuilder('person_address');
+    const ALLOWED_PERSON_TYPES = ['client', 'employee'];
+
+    const query = repo.createQueryBuilder('person_address')
+      .where('person_address.person_type IN (:...allowedTypes)', {
+        allowedTypes: ALLOWED_PERSON_TYPES,
+      });
 
     if (since) {
-      query.where('person_address.updated_at > :since', { since });
+      query.andWhere('person_address.updated_at > :since', { since });
     }
 
     const records = await query.getMany();
