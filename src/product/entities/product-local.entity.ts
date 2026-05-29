@@ -17,6 +17,9 @@ export class ProductLocal {
   @Column({ type: 'boolean', default: false })
   manage_stock: boolean;
 
+  @Column({ type: 'boolean', default: true })
+  is_taxable: boolean;
+
   @Column({ type: 'numeric', precision: 18, scale: 6, default: 0 })
   price: number;
 

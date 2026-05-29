@@ -48,7 +48,7 @@ export class ProductService {
 
     // ── Diagnostic log 4: primeros 5 product_id con su id_local ──────────────
     if (rows.length > 0) {
-      const sample = rows.slice(0, 5).map(r => `product_id=${r.product_id} | id_local=${r.id_local}`);
+      const sample = rows.slice(0, 5).map(r => `product_id=${r.product_id} | id_local=${r.id_local} | is_taxable=${r.is_taxable ?? true}`);
       this.logger.debug(`[ProductLocal] Muestra (primeros 5): ${sample.join(' | ')}`);
     }
 
@@ -78,6 +78,7 @@ export class ProductService {
       stock: Number(r.stock ?? 0),
       price: Number(r.price ?? 0),
       manage_stock: r.manage_stock ?? false,
+      is_taxable: r.is_taxable ?? true,
       updated_at: r.updated_at,
       created_at: r.created_at,
     }));
