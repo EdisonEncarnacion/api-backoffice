@@ -19,7 +19,16 @@ export class CashRegisterService {
     });
 
     if (existing) {
-      existing.id_state = dto.id_state;
+      if (this.isProtectedState(existing.id_state)) {
+        console.log(
+          `[CashRegister] create() — Estado protegido: caja code=${existing.cash_register_code} ` +
+          `mantiene id_state=${existing.id_state} (recibido desde Ventas: ${dto.id_state}). ` +
+          `No se actualiza id_state.`,
+        );
+      } else {
+        existing.id_state = dto.id_state;
+      }
+
       existing.last_closing_date = dto.last_closing_date
         ? new Date(dto.last_closing_date)
         : null;
@@ -78,12 +87,30 @@ export class CashRegisterService {
       return null;
     }
 
-    caja.id_state = data.id_state;
+    if (this.isProtectedState(caja.id_state)) {
+      console.log(
+        `[CashRegister] updateByCode() — Estado protegido: caja code=${cash_register_code} ` +
+        `mantiene id_state=${caja.id_state} (recibido desde Ventas: ${data.id_state}). ` +
+        `No se actualiza id_state.`,
+      );
+    } else {
+      caja.id_state = data.id_state;
+    }
+
     caja.updated_at = new Date();
 
     const updated = await cashRegisterRepo.save(caja);
-    console.log(`Caja ${cash_register_code} (local ${id_local}) actualizada con estado ${data.id_state}`);
+    console.log(`[CashRegister] updateByCode() — Caja code=${cash_register_code} (local ${id_local}) guardada con id_state=${caja.id_state}.`);
     return updated;
   }
-}
 
+  /**
+   * Estados gestionados por Backoffice que no deben ser sobreescritos
+   * por sincronizaciones entrantes desde Ventas.
+   *
+   * 3 = PRECERRADO | 4 = LIQUIDADO | 5 = PRELIQUIDADO
+   */
+  private isProtectedState(id_state: number): boolean {
+    return [3, 4, 5].includes(id_state);
+  }
+}
