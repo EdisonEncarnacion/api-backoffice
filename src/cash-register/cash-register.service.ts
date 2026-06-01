@@ -4,6 +4,10 @@ import { CashRegister } from './entities/cash-register.entity';
 import { CreateCashRegisterDto } from './dto/create-cash-register.dto';
 import { randomUUID } from 'crypto';
 
+/** Estados que el sincronizador NO puede sobreescribir.
+ *  4 = LIQUIDADO, 5 = PRELIQUIDADO  */
+const PROTECTED_STATES = [4, 5];
+
 @Injectable()
 export class CashRegisterService {
   constructor(private readonly tenantConnection: TenantConnectionProvider) { }
@@ -19,6 +23,18 @@ export class CashRegisterService {
     });
 
     if (existing) {
+      // Si la caja ya está en un estado protegido (LIQUIDADO/PRELIQUIDADO),
+      // el sincronizador NO puede retrocederla a un estado anterior.
+      if (PROTECTED_STATES.includes(existing.id_state)) {
+        console.log(
+          `[CashRegister] Sincronización ignorada — estado protegido. ` +
+          `code=${existing.cash_register_code} ` +
+          `estado_actual=${existing.id_state} (protegido) ` +
+          `estado_recibido=${dto.id_state} (ignorado)`,
+        );
+        return existing;
+      }
+
       console.log(
         `[CashRegister] Estado actualizado desde Ventas. ` +
         `code=${existing.cash_register_code} ` +
@@ -85,8 +101,20 @@ export class CashRegisterService {
       return null;
     }
 
+    // Si la caja ya está en un estado protegido (LIQUIDADO/PRELIQUIDADO),
+    // el sincronizador NO puede retrocederla a un estado anterior.
+    if (PROTECTED_STATES.includes(caja.id_state)) {
+      console.log(
+        `[CashRegister] updateByCode() ignorado — estado protegido. ` +
+        `code=${cash_register_code} ` +
+        `estado_actual=${caja.id_state} (protegido) ` +
+        `estado_recibido=${data.id_state} (ignorado)`,
+      );
+      return caja;
+    }
+
     console.log(
-      `[CashRegister] Estado actualizado desde Ventas. ` +
+      `[CashRegister] Estado actualizado desde Ventas (PATCH). ` +
       `code=${cash_register_code} ` +
       `estado_anterior=${caja.id_state} ` +
       `estado_nuevo=${data.id_state}`,
