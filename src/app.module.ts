@@ -57,6 +57,7 @@ import { LocalPointsMovementModule } from './local_points_movement/local_points_
 import { LocalModule } from './local/local.module';
 import { AddressModule } from './address/address.module';
 import { PersonAddressModule } from './person-address/person-address.module';
+import { DiscountModule } from './discount/discount.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -117,6 +118,7 @@ import { PersonAddressModule } from './person-address/person-address.module';
     LocalModule,
     AddressModule,
     PersonAddressModule,
+    DiscountModule,
   ],
 })
 export class AppModule implements NestModule {
