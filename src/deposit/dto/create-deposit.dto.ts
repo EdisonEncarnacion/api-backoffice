@@ -20,8 +20,8 @@ export class CreateDepositDto {
     @IsNumber()
     id_currency: number;
 
-    //@IsString()
-    // state: string;
+    @IsNumber()
+    state: number;
 
     @IsDateString()
     created_at: string;

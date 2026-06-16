@@ -53,6 +53,7 @@ export class DepositService {
     console.log('→ UUID local:', localUUID);
     console.log('→ Monto:', depositDto.total_amount);
     console.log('→ Tipo de depósito:', depositDto.code_deposit_type);
+    console.log('→ State recibido:', depositDto.state);
 
     const existingDeposit = await depositRepo.findOneBy({
       id_deposit: depositDto.id_deposit,
@@ -61,7 +62,7 @@ export class DepositService {
     if (existingDeposit) {
       existingDeposit.total_amount = depositDto.total_amount;
       existingDeposit.id_currency = depositDto.id_currency;
-      // existingDeposit.state = depositDto.state;
+      existingDeposit.state = depositDto.state;
       existingDeposit.updated_at = new Date();
       existingDeposit.date_process = new Date(depositDto.date_process);
 
@@ -69,6 +70,7 @@ export class DepositService {
       if (depositDto.id_sale_document_type !== undefined) existingDeposit.id_sale_document_type = depositDto.id_sale_document_type;
       if (depositDto.document_number !== undefined) existingDeposit.document_number = depositDto.document_number;
 
+      console.log(`→ Depósito ${depositDto.deposit_number} actualizado con state=${depositDto.state}`);
       return await depositRepo.save(existingDeposit);
     }
 
